@@ -33,6 +33,9 @@ var listRepositories = function(serverURL, callback) {
       
 };
 
+/**
+ *
+ */
 var addRepo = function(serverURL, newRepo, callback) {
 	var data = {
 	    	newRepo: newRepo,
@@ -259,7 +262,8 @@ exports.services = {
 		"parameters": {
 		
 		},
-		"return" 
+		"return" : "" 
+	},
 	"addFile": addFile,
 	"deleteFile": deleteFile,
 	"saveFile": saveFile
