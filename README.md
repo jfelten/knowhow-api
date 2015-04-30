@@ -64,18 +64,18 @@ add a file to a repository, create a new repository, delete a repository, delete
 
 An event listener is provided to listen for the following server side events:
 
-	* 'agent-update' 
-	* 'agent-error'
-	* 'agent-delete'
-	* 'agent-add'
-	* 'job-start'
-	* 'job-update'
-	* 'job-cancel'
-	* 'job-complete'
-	* 'job-error'
-	* 'cancel-job-on-agent'
-	* 'execution-complete'
-	* 'execution-error'
+* 'agent-update' 
+* 'agent-error'
+* 'agent-delete'
+* 'agent-add'
+* 'job-start'
+* 'job-update'
+* 'job-cancel'
+* 'job-complete'
+* 'job-error'
+* 'cancel-job-on-agent'
+* 'execution-complete'
+* 'execution-error'
 	
 Example:
 		var serverURL = "http://localhost:3001";
