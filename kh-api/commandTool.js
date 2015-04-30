@@ -104,6 +104,7 @@ var commandMap = {
 	}
 }
 
+exports.commandMap = commandMap;
 
 
 var execute = function(command, arguments) {
@@ -163,6 +164,19 @@ var help = function(command, subcommand) {
 		
 
 }
+
+var generateHelpMD = function() {
+	console.log("# Command Tool Functions");
+	console.log("\n");
+	var commands = Object.keys(commandMap)
+		commands.forEach(function(key, index, ar) {
+			console.log("###"+key+": "+commandMap[key].description+"\n");
+			console.log("\t\t"+commandMap[key].usage+"\n");
+			console.log("\n");
+	});
+
+}
+exports.generateHelpMD = generateHelpMD
 
 /*
 process.argv.forEach(function (val, index, array) {
