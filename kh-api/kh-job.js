@@ -1,5 +1,6 @@
 var request = require('request');
 var khRepo = require('./kh-repository');
+var async = require('async');
 
 /**
  * Executes a job on a knowhow server
@@ -58,6 +59,27 @@ var executeJob = function(serverURL, agent, job, callback) {
 
 }
 
+/**
+ * Synchronous version of addAgent call
+ *
+ * @param serverURL the knowhow server URL
+ * @param agentInfo json representaion of the agent to add
+ */
+var executeJobSync = function(serverURL, agent, job) {
+	async.series([
+	    function(callback){
+	        executeJob(serverURL, agent, job, callback)
+	    }
+		],
+	
+		function(err,job) {
+			if (err) {
+				return undefined;
+			}
+			else return job;
+	});
+}
+
 function agentEquals(agent1,agent2) {
 	if (agent1._id && agent2._id && agent1._id==agent2._id) {
 		return true;
@@ -93,7 +115,7 @@ var executeOnServer = function(serverURL, agent, job, callback) {
 					console.log("done event");
 					if (agentEquals(agent,completedAgent) && job.id == completedJob.id) {
 						khEventHandler.removeAllListeners();
-						callback();
+						callback(undefined, completedJob);
 					}
 				});
 				khEventHandler.on("job-error", function(errorAgent, errorJob) {

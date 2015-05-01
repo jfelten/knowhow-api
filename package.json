@@ -2,7 +2,7 @@
   "name": "knowhow-api",
   "version": "0.0.2",
   "description": "api that exposes knowhow-server and knowhow-agent services.  Provides a command line tool.",
-  "main": "kh-api/commandTool.js",
+  "main": "kh-api/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,22 +1,9 @@
 
 
 //server API
-var khServerRepoServices = require('./server-api/kh-repository').services;
-var khServerJobservices = require('./server-api/kh-job').services;
-var khServerWorkflowServices = require('./server-api/kh-workflow').services;
-
-//agent API
-var khAgentServices = require('./agent-api/kh-agent').services;
-
-var services = {};
-var addServ
-
-var executeCall = function(APICall, params) {
-	var paramString = '';
-	
-	services[APICall].apply(uri,params);
-
-}
-
-exports.executeAPICall = executeCall;
-	
+exports.khRepository = require('./kh-api/kh-repository');
+exports.khJob = require('./kh-api/kh-job');
+exports.khAgent = require('./kh-api/kh-agent');
+exports.khWorkflow = require('./kh-api/kh-workflow');
+exports.khEventsHandler = require('./kh-api/kh-events-handler');
+//exports.commandTool = require('./kh-api/commandTool');
