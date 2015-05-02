@@ -118,6 +118,9 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#executeJob">executeJob(serverURL, agent, job, callback)</a></dt>
 <dd><p>Executes a job on a knowhow server</p>
 </dd>
+<dt><a href="#executeJobSync">executeJobSync(serverURL, agentInfo)</a></dt>
+<dd><p>Synchronous version of addAgent call</p>
+</dd>
 <dt><a href="#cancelJob">cancelJob(agent, job, callback)</a></dt>
 <dd><p>Cancels a running job on a knowhow server</p>
 </dd>
@@ -267,6 +270,17 @@ Executes a job on a knowhow server
 | agent | agentInfo _id is required is requred - ex: \{_id: "1234"\} |
 | job | a json job to execute |
 | callback | callback function with parameters (error, agentInfo) |
+
+<a name="executeJobSync"></a>
+## executeJobSync(serverURL, agentInfo)
+Synchronous version of addAgent call
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| serverURL | the knowhow server URL |
+| agentInfo | json representaion of the agent to add |
 
 <a name="cancelJob"></a>
 ## cancelJob(agent, job, callback)
