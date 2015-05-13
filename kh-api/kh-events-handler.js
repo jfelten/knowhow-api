@@ -16,13 +16,22 @@ function KHEventHandler(serverURL) {
 	console.log("listening for events on: "+serverURL);
 	
 	self.on = function(type, func) {
-		this.KHServerSocket.on(type, func);
+		self.KHServerSocket.on(type, func);
 		return this;
 	};
 	
 	self.removeAllListeners = function() {
-		this.KHServerSocket.removeAllListeners();
+		self.KHServerSocket.removeAllListeners();
 		return this;
+	};
+	
+	self.disconnect = function() {
+		self.KHServerSocket.disconnect();
+	};
+	self.close = function() {
+		self.KHServerSocket.removeAllListeners();
+		self.KHServerSocket.close();
+		console.log("closed event socket to: "+serverURL);
 	};
 	
 	return self;

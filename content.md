@@ -18,9 +18,9 @@ This is installed by default when installing knowhow package.  If you want to in
 
 ###List all active repositories on a knowhow server
 
-		var khRepo = require('knowhow-api').kh-repository;
-		varkhServer = 'http://localhost:3001';
-		khRepo.listRepositories(khServer,function(err, repos) {
+		var serverURL = "http://localhost:3001";
+		var khClient =  require('knowhow-api')(serverURL);
+		khClient.khRepository.listRepositories(khServer,function(err, repos) {
 		  	if (err) {
 		  		console.log("unable to get repositories: "+err.message);
 				console.log(err.stack);
@@ -36,17 +36,41 @@ or using KHCommand
 		 
 ##Execute a job on a knowhow server
 
-		var khJob = require('knowhow-api').kh-job;
+		var serverURL = "http://localhost:3001";
+		var khClient =  require('knowhow-api')(serverURL);
 		testJob = { "jobRef": "MyRepo://jobs/dummyJob.json"}
-		khJob.executeJob(serverURL, agent, createAgentJob, function (err, result) {
-			khAgent.deleteAgent(testAgent, function(jobError, deletedAgent) {
+		khClient.khJob.executeJob(serverURL, agent, createAgentJob, function (err, result) {
 			
-			});
 		});
 		
 or using KHCommand
 		
 		KHCommand executeJob http://localhost:3001 { "jobRef": "MyRepo://jobs/dummyJob.json"}
+
+##Add/delete an agent
+
+	var serverURL = "http://localhost:3001";
+	var khClient =  require('knowhow-api')(serverURL);
+	var agentInfo = {
+			"host": "myHost",
+			"user": "myUser",
+			"password": "myPassword",
+			"port": 3141
+		};
+	
+	//add agent
+	khClient.khAgent.addAgent(agentInfo, function(err, addedAgent) {
+	
+	});
+	
+	//delete agent
+	khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
+	
+	});
+
+##other examples:
+
+add a file to a repository, create a new repository, delete a repository, delete a file in a repository, add an agent, delete and agent, execute a workflow
 
 ###knowhow urls
 
@@ -56,9 +80,6 @@ All files and resources on a knowhow server are designed to be accessed in url s
 
 For example: MyRepo:///jobs/myJob.json would refer to the file myJob.json located in the jobs folder of the MyRepo repositorhy
 
-##other examples:
-
-add a file to a repository, create a new repository, delete a repository, delete a file in a repository, add an agent, delete and agent, execute a workflow
 
 ###Events
 

@@ -1,16 +1,17 @@
 var request = require('request');
 
-
+var inProgressAdds = {};
+var inProgressDeletes = {};
 
 /**
  * Lists all repositories on a server
  * @param serverURL
  * @param callback - function to call when done with parameters (error, repoList)
  */
-var listRepositories = function(serverURL, callback) {
+var listRepositories = function(callback) {
   
-      
-  request.get(serverURL+'/repo/listRepositories',
+  console.log(callback);
+  request.get(this.serverURL+'/repo/listRepositories',
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	        	if (!error) {
@@ -38,14 +39,15 @@ var listRepositories = function(serverURL, callback) {
 /**
  * loads a populated repo json object based on a name
  *
- # @parma serverName - the URL of the knowhow server ex :http://localhost:3001
  * @param repoName - the name of the repositry
  * @param callback - callback function to execute when complete with parameters (error, repoObject)
  */
-var loadRepoFromName = function(serverURL, repoName, callback) {
-	 request.get(serverURL+'/repo/getRepoFromName?repoName='+repoName,
+var loadRepoFromName = function(repoName, callback) {
+	request.get(this.serverURL+'/repo/getRepoFromName?repoName='+repoName,
     function (error, response, body) {
+
         if (error || response.statusCode != 200) {
+        	console.log("error!!!");
             if (!error) {
     			callback(new Error("response: "+response.statusCode+" "+body)); 
         	} else {
@@ -59,6 +61,7 @@ var loadRepoFromName = function(serverURL, repoName, callback) {
 	        	  }
 	        callback(undefined, jsonObject);
 	    }
+	    console.log("complete!!!");
     }
  );
 	
@@ -68,15 +71,14 @@ var loadRepoFromName = function(serverURL, repoName, callback) {
 /**
  * Adds a new repository to a knowhow server specified by param serverUDL
  *
- * @param serverURL - - the URL of the knowhow server ex :http://localhost:3001
  * @param newRepo - A json object describing the new repository with parameters (error, repoObject)
  */
-var addRepo = function(serverURL, newRepo, callback) {
+var addRepo = function(newRepo, callback) {
 	var data = {
 	    	newRepo: newRepo,
 	    };
 	console.log(data);
-	request.post(serverURL+'/repo/newFileRepo', {form: data},
+	request.post(this.serverURL+'/repo/newFileRepo', {form: data},
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
@@ -106,12 +108,12 @@ var addRepo = function(serverURL, newRepo, callback) {
  * @param existingRepo - a json object describing a repository - _id must be specified
  * @param callback - callback functions with parameters (error, modifiedRepoObject)
  */    
-var updateRepo = function(serverURL,existingRepo,callback) {
+var updateRepo = function(existingRepo,callback) {
 	var data = {
 	    	existingRepo: existingRepo,
 	    };
 	    
-	 request.post(serverURL+'/repo/updateFileRepo',data,
+	 request.post(this.serverURL+'/repo/updateFileRepo',data,
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
@@ -129,16 +131,15 @@ var updateRepo = function(serverURL,existingRepo,callback) {
 /**
  * Deletes a repository on a knowhow server
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param repo - a json object representing the repo to delete - _id must be specified
  * @param callback - callback function with parameters (error, deletedRepo)
  */
-var deleteRepo = function(serverURL,repo,callback) {
+var deleteRepo = function(repo,callback) {
 	console.log("deleting repo: "+repo._id);
 	var data = {
 	    	repo: repo,
 	    };
-	request.post(serverURL+'/repo/deleteFileRepo',data,
+	request.post(this.serverURL+'/repo/deleteFileRepo',data,
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
@@ -156,15 +157,14 @@ var deleteRepo = function(serverURL,repo,callback) {
 /**
  * Returns a directory tree structure starting at a specified subDir- used to load a tree widget
  * 
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param repo - a json object representing a repository to use
  * @param subDir - the point in the repository to start - ex: /jobs
  * @param callback callback function with params (error, repoTree)
  */
-var loadRepo = function(serverURL,repo, subDir, callback) {
+var loadRepo = function(repo, subDir, callback) {
 	var dirPath = '/api/fileListForDir?dir='+repo.path;
 	if (subDir)  dirPath= dirPath+'/'+subDir
-    request.get(serverURL+dirPath,
+    request.get(this.serverURL+dirPath,
 	    function (error, response, body) {
 	    	
 	        if (error || response.statusCode != 200) {
@@ -197,10 +197,10 @@ var loadRepo = function(serverURL,repo, subDir, callback) {
  * @param path - the repository path of the file - ex: /jobs/myJob.json
  * @callback - callback function with parameters (error, fileContent)
  */	  
-var loadFile = function(serverURL,repo, path, callback) {
+var loadFile = function(repo, path, callback) {
   	  console.log('load file');
 	  
-       request.get(serverURL+'/api/fileContent?repo='+repo+'&file='+path,
+       request.get(this.serverURL+'/api/fileContent?repo='+repo+'&file='+path,
 		    function (error, response, body) {
 		        if (error || response.statusCode != 200) {
 		            if (!error) {
@@ -224,17 +224,16 @@ var loadFile = function(serverURL,repo, path, callback) {
 /**
  * Adds a file to specified repository
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param path - the repository path of the file - ex: /jobs/myJob.json
  * @param newFile - new file name 
  * @param content - text content of the file to add
  * @param isDirectory - flag for whether of not file is a directory
  * @param callback - callback function with parameters (error, newFile)
  */
-var addFile = function(serverURL, path, newFile, content, isDirectory, callback) {
+var addFile = function(path, newFile, content, isDirectory, callback) {
   
       
-  request.get(serverURL+'/api/addFile?path='+path+'&fileName='+newFile+'&isDirectory='+isDirectory+'&isEncoded=true&content='+encodeURIComponent(content),
+  request.get(this.serverURL+'/api/addFile?path='+path+'&fileName='+newFile+'&isDirectory='+isDirectory+'&isEncoded=true&content='+encodeURIComponent(content),
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	        	if (!error) {
@@ -264,13 +263,12 @@ var addFile = function(serverURL, path, newFile, content, isDirectory, callback)
 /**
  * Deletes specified file from a repository
  * 
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param filePath - the absolute directory structure of the file to delete ex /myRepo/job/myJob.json
  * @param force
  * @param callback - callback function with parameters (error, deletedFile)
  */
-var deleteFile = function(serverURL, filePath, force, callback) {
- request.get(encodeURIComponent(serverURL+'/api/deleteFile?fileName='+filePath),
+var deleteFile = function(filePath, force, callback) {
+ request.get(encodeURIComponent(this.serverURL+'/api/deleteFile?fileName='+filePath),
     function (error, response, body) {
         if (error || response.statusCode != 200) {
             if (!error) {
@@ -293,15 +291,14 @@ var deleteFile = function(serverURL, filePath, force, callback) {
 /**
  * saves a file	in the specified filePAth on a knowhow server
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param filePath - the absolute directory path of a specified file on the knowhow server host
  * @param fileContent - the text content of the file
  * @param callback - callbacj function with params (error, file)
  */   
-var saveFile =  function(serverURL,filePath,fileContent,callback) {
+var saveFile =  function(filePath,fileContent,callback) {
 	console.log(fileContent);
 	console.log(encodeURIComponent(JSON.stringify(fileContent)));
-	 var saveURL = serverURL+'/api/saveFile?fileName='+filePath+'&isEncoded=true&data='+encodeURIComponent(fileContent);
+	 var saveURL = this.serverURL+'/api/saveFile?fileName='+filePath+'&isEncoded=true&data='+encodeURIComponent(fileContent);
 	 console.log(saveURL);
 	 request.get(saveURL ,
 	    function (error, response, body) {
@@ -322,6 +319,33 @@ var saveFile =  function(serverURL,filePath,fileContent,callback) {
 	 );
 	  
 };
+
+/**
+ * Factory method for KHJob
+ * @param serverURL the url of the server
+ * @param EventHandler
+ */
+function KHRepository(serverURL, khEventHandler){
+	self=this;
+	self.serverURL = serverURL;
+	self.khEventHandler = khEventHandler;
+	
+	self.listRepositories = listRepositories.bind({serverURL: serverURL});
+	self.addRepo = addRepo.bind({serverURL: serverURL});
+	self.updateRepo = updateRepo.bind({serverURL: serverURL});
+	self.deleteRepo = deleteRepo.bind({serverURL: serverURL});
+	self.loadRepo = loadRepo.bind({serverURL: serverURL});
+	self.loadRepoFromName = loadRepoFromName.bind({serverURL: serverURL});
+	self.loadFile = loadFile.bind({serverURL: serverURL});
+	self.addFile = addFile.bind({serverURL: serverURL});
+	self.deleteFile = deleteFile.bind({serverURL: serverURL});
+	self.saveFile = saveFile.bind({serverURL: serverURL});
+	
+	
+	return self;
+}
+module.exports = KHRepository;
+
 
 exports.listRepositories = listRepositories;
 exports.addRepo = addRepo;

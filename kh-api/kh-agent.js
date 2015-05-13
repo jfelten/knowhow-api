@@ -1,44 +1,46 @@
 var request = require('request');
 var async = require('async');
 
+var agentDeleteQueue = {};
+var agentAddQueue = {};
+
+
+function validateAgent(agentInfo) {
+	if (agentInfo.login && !agentInfo.user) {
+		agentInfo.user = agentInfo.login;
+	}
+	return (agentInfo.user && agentInfo.host && agentInfo.port);
+}
+
 /**
  * Adds a new agent to a knowhow server.  If no login or password is specified it will attempt to scan for an already
  * running agent on the specified host.  If no port is specified the port 3141 is used.  Plain text passwords may be used, but 
  * is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped using the server's encrytion key
  * 
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param agentInfo - agentInfo only host is requred - ex: \{"host": "myHost", "port": 3141, "user": "MyUSer", "passwordEnc": "DSAF@#R##EASDSAS@#"\}
  * @param callback - callback function with parameters (error, agentInfo)
  */
-var addAgent = function(serverURL, agentInfo, callback) {
-	 
+var addAgent = function(agentInfo, callback) {
+	if (!validateAgent(agentInfo)) {
+		callback(new Error("Invalid agent data"));
+		return;
+	}
+	 var id = agentInfo.user+"@"+agentInfo.host+":"+agentInfo.port;
+	 agentAddQueue[id] = callback;
 	 request({ method: 'POST'
-	    , uri: serverURL+'/api/addAgent'
+	    , uri: this.serverURL+'/api/addAgent'
 	    , body: agentInfo
 	    , json: true
     }, function (error, response, body) {
-	        if (error || response.statusCode != 200) {
+	        if (error || (response && response.statusCode != 200)) {
 	            if (!error) {
         			callback(new Error("response: "+response.statusCode+" "+body)); 
 	        	} else {
 	            	callback(error);
 	            }
+	            delete agentAddQueue[id];
 	        } else {
-	        	var khEventHandler = new require('../kh-api/kh-events-handler')(serverURL);
-	        	khEventHandler.on('agent-add', function(agent) {
-	        		console.log('agent-add');
-	        		if(agent.user==agentInfo.user && agent.host==agentInfo.host && agent.port==agentInfo.port) {
-	        			khEventHandler.removeAllListeners();
-	        			callback(undefined, agent);
-	        		}
-	        	});
-	        	khEventHandler.on('agent-error', function(agent) {
-	        		console.log('agent-error');
-	        		if(agent.user==agentInfo.user && agent.host==agentInfo.host && agent.port==agentInfo.port) {
-	        		 	khEventHandler.removeAllListeners();
-	        			callback(new Error(agent.message));
-	        		}
-	        	});
+		        //callback(undefined, body);
 	        	
 	        }
 	    }
@@ -49,13 +51,12 @@ var addAgent = function(serverURL, agentInfo, callback) {
 /**
  * Synchronous version of addAgent call
  *
- * @param serverURL the knowhow server URL
  * @param agentInfo json representaion of the agent to add
  */
-var addAgentSync = function(serverURL, agentInfo) {
+var addAgentSync = function(agentInfo) {
 	async.series([
 	    function(callback){
-	        addAgent(serverURL, agentInfo, callback)
+	        addAgent.bind({serverURL: this.serverURL})(agentInfo, callback);
 	    }
 		],
 	
@@ -70,14 +71,13 @@ var addAgentSync = function(serverURL, agentInfo) {
 /**
  * Updates agent info with values specified in agentInfo
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param agentInfo - agentInfo must specify _id - ex: \{"_id": "1234:", "host": "myHost", "port": 3141, "user": "MyUser", "passwordEnc": "DSAF@#R##EASDSAS@#"\}
  * @param callback - callback function with parameters (error, agentInfo)
  */
-var updateAgent = function(serverURL, agentInfo, callback) {
-	 request.post(serverURL+'/api/agentEvent',{form:  agentInfo},
+var updateAgent = function(agentInfo, callback) {
+	 request.post(this.serverURL+'/api/agentEvent',{form:  agentInfo},
 	    function (error, response, body) {
-	        if (error || response.statusCode != 200) {
+	        if (error || (response && response.statusCode != 200)) {
 	            if (!error) {
         			callback(new Error("response: "+response.statusCode+" "+body)); 
 	        	} else {
@@ -93,36 +93,25 @@ var updateAgent = function(serverURL, agentInfo, callback) {
 /**
  * deletes an agent on a knowhow server
  * 
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param agentInfo - agentInfo must specify _id - ex: \{"_id": "1234"\}
  * @param callback - callback function with parameters (error, agentInfo)
  */
-var deleteAgent = function(serverURL, agentInfo, callback) {
-	    
-	 request.post(serverURL+'/api/deleteAgent',{form:  agentInfo},
+var deleteAgent = function(agentInfo, callback) {
+	 //var id = agentInfo.user+"@"+agentInfo.host+":"+agentInfo.port;
+	 //agentDeleteQueue[id] = callback;
+	 request.post(this.serverURL+'/api/deleteAgent',{form: agentInfo},
 	    function (error, response, body) {
-	        if (error || response.statusCode != 200) {
+	    	if (response) {
+	    		console.log("got delete response: "+response.statusCode);
+	    	}
+	        if (error || (response && response.statusCode != 200)) {
 	            if (!error) {
         			callback(new Error("response: "+response.statusCode+" "+body)); 
 	        	} else {
 	            	callback(error);
 	            }
 	        } else {
-	        	var khEventHandler = new require('../kh-api/kh-events-handler')(serverURL);
-	        	khEventHandler.on('agent-delete', function(agent) {
-	        		console.log('agent-delete');
-	        		if(agent.user==agentInfo.user && agent.host==agentInfo.host && agent.port==agentInfo.port) {
-	        			khEventHandler.removeAllListeners();
-	        			callback(undefined, agent);
-	        		}
-	        	});
-	        	khEventHandler.on('agent-error', function(agent) {
-	        		console.log('agent-error');
-	        		if(agent.user==agentInfo.user && agent.host==agentInfo.host && agent.port==agentInfo.port) {
-	        			khEventHandler.removeAllListeners();
-	        			callback(new Error(agent.message));
-	        		}
-	        	});
+	      		callback();
 	        }
 	    }
 	);
@@ -133,14 +122,13 @@ var deleteAgent = function(serverURL, agentInfo, callback) {
 /**
  * deletes an agent on a knowhow server
  * 
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param agentInfo - agentInfo must specify _id - ex: \{"_id": "1234"\}
  * @return agent or undefined if it didn't work
  */
-deleteAgentSync = function(serverURL, agentInfo) {
+deleteAgentSync = function(agentInfo) {
 	async.series([
 	    function(callback){
-	        deleteAgent(serverURL, agentInfo, callback)
+	        deleteAgent.bind({serverURL: this.serverURL})(agentInfo, callback);
 	    }
 		],
 	
@@ -156,23 +144,21 @@ deleteAgentSync = function(serverURL, agentInfo) {
 /**
  * retrives agent info base on _id.
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param agentInfo - agentInfo must specify _id - ex: _id: "1234"
  * @param callback - callback function with parameters (error, agentInfo)
  */
-var getAgentInfo = function(serverURL, agentInfo, callback) {
+var getAgentInfo = function(agentInfo, callback) {
 
 };
 
 /**
  * retrives agent info base on _id.
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param agentInfo - agentInfo must specify _id - ex: 1234
  * @param callback - callback function with parameters (error, agentInfo)
  */
-var getAgentLogs = function(serverURL, agentInfo, callback) {
-	request.post(serverURL+'/api/logs',agentInfo,
+var getAgentLogs = function(agentInfo, callback) {
+	request.post(this.serverURL+'/api/logs',agentInfo,
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
@@ -190,13 +176,12 @@ var getAgentLogs = function(serverURL, agentInfo, callback) {
 /**
  * retrieves a list of all agents on a knowhow server
  *
- * @param serverURL - the URL of the knowhow server ex :http://localhost:3001
  * @param callback - callback function with parameters (error, agentInfo)
  */
-var getAgentList = function(serverURL, callback) {
-	request.get(serverURL+'/api/connectedAgents' ,
+var getAgentList = function(callback) {
+	request.get(this.serverURL+'/api/connectedAgents' ,
 	    function (error, response, body) {
-	        if (error || response.statusCode != 200) {
+	        if (error || (response && response.statusCode != 200)) {
 	           if (!error) {
 	    			callback(new Error("response: "+response.statusCode+" "+body)); 
 	        	} else {
@@ -213,10 +198,65 @@ var getAgentList = function(serverURL, callback) {
 	);
 }
 
+function KHAgent(serverURL,khEventHandler) {
+	var self = this;
+	self.serverURL = serverURL;
+	self.khEventHandler = khEventHandler;
+	
+	self.khEventHandler.on('agent-add', function(agent) {
+		var id = agent.user+"@"+agent.host+":"+agent.port;
+		console.log('agent add complete: '+id);
+		console.log(agentAddQueue);
+		console.log(agentAddQueue[id]);
+		if (agentAddQueue[id]) {
+			agentAddQueue[id](undefined, agent);
+			delete agentAddQueue[id];
+		}
+	});
+	self.khEventHandler.on('agent-error', function(agent) {
+		var id = agent.user+"@"+agent.host+":"+agent.port;
+		console.log('agent error: '+id+" "+agent.message);
+		if (agentAddQueue[id]) {
+			agentAddQueue[id](new Error(agent.message));
+			delete agentAddQueue[id];
+		}
+		if (agentDeleteQueue[id]) {
+			agentDeleteQueue[id](new Error(agent.message));
+			delete agentDeleteQueue[id];
+		}
+	});
+	self.khEventHandler.on('agent-delete', function(agent) {
+		var id = agent.user+"@"+agent.host+":"+agent.port;
+		console.log('agent delete complete '+id);
+		//if (agentDeleteQueue[id]) {
+		//	agentDeleteQueue[id](new Error(agent.message));
+		//	delete agentDeleteQueue[id];
+		//}
+	});
+	
+	self.addAgent = addAgent.bind({serverURL: serverURL});
+	self.addAgentSync = addAgentSync.bind({serverURL: serverURL});
+	self.deleteAgent = deleteAgent.bind({serverURL: serverURL});
+	self.deleteAgentSync = deleteAgentSync.bind({serverURL: serverURL});
+	self.updateAgent = updateAgent.bind({serverURL: serverURL});
+	self.getAgentLogs = getAgentLogs.bind({serverURL: serverURL});
+	self.getAgentList = getAgentList.bind({serverURL: serverURL});
+	
+	return self;
+}
+
+module.exports = KHAgent;
+KHAgent.prototype.addAgent = addAgent;
+KHAgent.prototype.addAgentSync = addAgentSync;
+KHAgent.prototype.deleteAgent = deleteAgent;
+KHAgent.prototype.deleteAgentSync = deleteAgentSync;
+KHAgent.prototype.updateAgent = updateAgent;
+
+/*
 exports.addAgent = addAgent;
 exports.addAgentSync = addAgentSync;
 exports.deleteAgent = deleteAgent;
 exports.deleteAgentSync = deleteAgentSync;
 exports.updateAgent = updateAgent;
 exports.getAgentLogs = getAgentLogs;
-exports.getAgentList = getAgentList;
+exports.getAgentList = getAgentList;*/
