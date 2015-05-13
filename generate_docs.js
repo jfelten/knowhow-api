@@ -1,4 +1,4 @@
-var commandMap = require('./kh-api/commandTool').commandMap;
+var commandMap = require('./kh-api/commandTool').getCommandMap();
 
 var generateHelpMD = function() {
 	var output = '';

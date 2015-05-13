@@ -113,6 +113,8 @@ var getCommandMap = function(khClient) {
 	return commandMap;
 }
 
+exports.getCommandMap = getCommandMap;
+
 var execute = function(command, serverURL, arguments) {
 	
 	console.log("executing: "+command+" on "+serverURL);
