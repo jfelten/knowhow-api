@@ -18,9 +18,9 @@ This is installed by default when installing knowhow package.  If you want to in
 
 ###List all active repositories on a knowhow server
 
-		var khRepo = require('knowhow-api').kh-repository;
-		varkhServer = 'http://localhost:3001';
-		khRepo.listRepositories(khServer,function(err, repos) {
+		var serverURL = "http://localhost:3001";
+		var khClient =  require('knowhow-api')(serverURL);
+		khClient.khRepository.listRepositories(khServer,function(err, repos) {
 		  	if (err) {
 		  		console.log("unable to get repositories: "+err.message);
 				console.log(err.stack);
@@ -36,17 +36,41 @@ or using KHCommand
 		 
 ##Execute a job on a knowhow server
 
-		var khJob = require('knowhow-api').kh-job;
+		var serverURL = "http://localhost:3001";
+		var khClient =  require('knowhow-api')(serverURL);
 		testJob = { "jobRef": "MyRepo://jobs/dummyJob.json"}
-		khJob.executeJob(serverURL, agent, createAgentJob, function (err, result) {
-			khAgent.deleteAgent(testAgent, function(jobError, deletedAgent) {
+		khClient.khJob.executeJob(serverURL, agent, createAgentJob, function (err, result) {
 			
-			});
 		});
 		
 or using KHCommand
 		
 		KHCommand executeJob http://localhost:3001 { "jobRef": "MyRepo://jobs/dummyJob.json"}
+
+##Add/delete an agent
+
+	var serverURL = "http://localhost:3001";
+	var khClient =  require('knowhow-api')(serverURL);
+	var agentInfo = {
+			"host": "myHost",
+			"user": "myUser",
+			"password": "myPassword",
+			"port": 3141
+		};
+	
+	//add agent
+	khClient.khAgent.addAgent(agentInfo, function(err, addedAgent) {
+	
+	});
+	
+	//delete agent
+	khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
+	
+	});
+
+##other examples:
+
+add a file to a repository, create a new repository, delete a repository, delete a file in a repository, add an agent, delete and agent, execute a workflow
 
 ###knowhow urls
 
@@ -56,9 +80,6 @@ All files and resources on a knowhow server are designed to be accessed in url s
 
 For example: MyRepo:///jobs/myJob.json would refer to the file myJob.json located in the jobs folder of the MyRepo repositorhy
 
-##other examples:
-
-add a file to a repository, create a new repository, delete a repository, delete a file in a repository, add an agent, delete and agent, execute a workflow
 
 ###Events
 
@@ -89,36 +110,36 @@ Example:
 
 ## Functions
 <dl>
-<dt><a href="#addAgent">addAgent(serverURL, agentInfo, callback)</a></dt>
+<dt><a href="#addAgent">addAgent(agentInfo, callback)</a></dt>
 <dd><p>Adds a new agent to a knowhow server.  If no login or password is specified it will attempt to scan for an already
 running agent on the specified host.  If no port is specified the port 3141 is used.  Plain text passwords may be used, but 
 is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped using the server&#39;s encrytion key</p>
 </dd>
-<dt><a href="#addAgentSync">addAgentSync(serverURL, agentInfo)</a></dt>
+<dt><a href="#addAgentSync">addAgentSync(agentInfo)</a></dt>
 <dd><p>Synchronous version of addAgent call</p>
 </dd>
-<dt><a href="#updateAgent">updateAgent(serverURL, agentInfo, callback)</a></dt>
+<dt><a href="#updateAgent">updateAgent(agentInfo, callback)</a></dt>
 <dd><p>Updates agent info with values specified in agentInfo</p>
 </dd>
-<dt><a href="#deleteAgent">deleteAgent(serverURL, agentInfo, callback)</a></dt>
+<dt><a href="#deleteAgent">deleteAgent(agentInfo, callback)</a></dt>
 <dd><p>deletes an agent on a knowhow server</p>
 </dd>
-<dt><a href="#deleteAgentSync">deleteAgentSync(serverURL, agentInfo)</a> ⇒</dt>
+<dt><a href="#deleteAgentSync">deleteAgentSync(agentInfo)</a> ⇒</dt>
 <dd><p>deletes an agent on a knowhow server</p>
 </dd>
-<dt><a href="#getAgentInfo">getAgentInfo(serverURL, agentInfo, callback)</a></dt>
+<dt><a href="#getAgentInfo">getAgentInfo(agentInfo, callback)</a></dt>
 <dd><p>retrives agent info base on _id.</p>
 </dd>
-<dt><a href="#getAgentLogs">getAgentLogs(serverURL, agentInfo, callback)</a></dt>
+<dt><a href="#getAgentLogs">getAgentLogs(agentInfo, callback)</a></dt>
 <dd><p>retrives agent info base on _id.</p>
 </dd>
-<dt><a href="#getAgentList">getAgentList(serverURL, callback)</a></dt>
+<dt><a href="#getAgentList">getAgentList(callback)</a></dt>
 <dd><p>retrieves a list of all agents on a knowhow server</p>
 </dd>
-<dt><a href="#executeJob">executeJob(serverURL, agent, job, callback)</a></dt>
+<dt><a href="#executeJob">executeJob(agent, job, callback)</a></dt>
 <dd><p>Executes a job on a knowhow server</p>
 </dd>
-<dt><a href="#executeJobSync">executeJobSync(serverURL, agentInfo)</a></dt>
+<dt><a href="#executeJobSync">executeJobSync(agentInfo, job)</a></dt>
 <dd><p>Synchronous version of addAgent call</p>
 </dd>
 <dt><a href="#cancelJob">cancelJob(agent, job, callback)</a></dt>
@@ -127,33 +148,38 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#getRunningJobsList">getRunningJobsList(agent, callback)</a></dt>
 <dd><p>Retreives a list of currently executing jobs on a knowhow server</p>
 </dd>
+<dt><a href="#KHJob">KHJob(serverURL, EventHandler)</a></dt>
+<dd><p>Factory method for KHJob</p>
+</dd>
 <dt><a href="#listRepositories">listRepositories(serverURL, callback)</a></dt>
 <dd><p>Lists all repositories on a server</p>
 </dd>
 <dt><a href="#loadRepoFromName">loadRepoFromName(repoName, callback)</a></dt>
 <dd><p>loads a populated repo json object based on a name</p>
-<h1 id="-parma-servername-the-url-of-the-knowhow-server-ex-http-localhost-3001">@parma serverName - the URL of the knowhow server ex :<a href="http://localhost:3001">http://localhost:3001</a></h1>
 </dd>
-<dt><a href="#addRepo">addRepo(serverURL, newRepo)</a></dt>
+<dt><a href="#addRepo">addRepo(newRepo)</a></dt>
 <dd><p>Adds a new repository to a knowhow server specified by param serverUDL</p>
 </dd>
 <dt><a href="#updateRepo">updateRepo(serverURL, existingRepo, callback)</a></dt>
 <dd><p>Modifies an existing repo obejct on a knowhow server with the values specified in the repo object</p>
 </dd>
-<dt><a href="#deleteRepo">deleteRepo(serverURL, repo, callback)</a></dt>
+<dt><a href="#deleteRepo">deleteRepo(repo, callback)</a></dt>
 <dd><p>Deletes a repository on a knowhow server</p>
 </dd>
-<dt><a href="#loadRepo">loadRepo(serverURL, repo, subDir, callback)</a></dt>
+<dt><a href="#loadRepo">loadRepo(repo, subDir, callback)</a></dt>
 <dd><p>Returns a directory tree structure starting at a specified subDir- used to load a tree widget</p>
 </dd>
-<dt><a href="#addFile">addFile(serverURL, path, newFile, content, isDirectory, callback)</a></dt>
+<dt><a href="#addFile">addFile(path, newFile, content, isDirectory, callback)</a></dt>
 <dd><p>Adds a file to specified repository</p>
 </dd>
-<dt><a href="#deleteFile">deleteFile(serverURL, filePath, force, callback)</a></dt>
+<dt><a href="#deleteFile">deleteFile(filePath, force, callback)</a></dt>
 <dd><p>Deletes specified file from a repository</p>
 </dd>
-<dt><a href="#saveFile">saveFile(serverURL, filePath, fileContent, callback)</a></dt>
+<dt><a href="#saveFile">saveFile(filePath, fileContent, callback)</a></dt>
 <dd><p>saves a file    in the specified filePAth on a knowhow server</p>
+</dd>
+<dt><a href="#KHRepository">KHRepository(serverURL, EventHandler)</a></dt>
+<dd><p>Factory method for KHJob</p>
 </dd>
 </dl>
 ## Typedefs
@@ -163,7 +189,7 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 </dd>
 </dl>
 <a name="addAgent"></a>
-## addAgent(serverURL, agentInfo, callback)
+## addAgent(agentInfo, callback)
 Adds a new agent to a knowhow server.  If no login or password is specified it will attempt to scan for an already
 running agent on the specified host.  If no port is specified the port 3141 is used.  Plain text passwords may be used, but 
 is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped using the server's encrytion key
@@ -172,47 +198,43 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agentInfo | agentInfo only host is requred - ex: \{"host": "myHost", "port": 3141, "user": "MyUSer", "passwordEnc": "DSAF@#R##EASDSAS@#"\} |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="addAgentSync"></a>
-## addAgentSync(serverURL, agentInfo)
+## addAgentSync(agentInfo)
 Synchronous version of addAgent call
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the knowhow server URL |
 | agentInfo | json representaion of the agent to add |
 
 <a name="updateAgent"></a>
-## updateAgent(serverURL, agentInfo, callback)
+## updateAgent(agentInfo, callback)
 Updates agent info with values specified in agentInfo
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agentInfo | agentInfo must specify _id - ex: \{"_id": "1234:", "host": "myHost", "port": 3141, "user": "MyUser", "passwordEnc": "DSAF@#R##EASDSAS@#"\} |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="deleteAgent"></a>
-## deleteAgent(serverURL, agentInfo, callback)
+## deleteAgent(agentInfo, callback)
 deletes an agent on a knowhow server
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agentInfo | agentInfo must specify _id - ex: \{"_id": "1234"\} |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="deleteAgentSync"></a>
-## deleteAgentSync(serverURL, agentInfo) ⇒
+## deleteAgentSync(agentInfo) ⇒
 deletes an agent on a knowhow server
 
 **Kind**: global function  
@@ -220,67 +242,62 @@ deletes an agent on a knowhow server
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agentInfo | agentInfo must specify _id - ex: \{"_id": "1234"\} |
 
 <a name="getAgentInfo"></a>
-## getAgentInfo(serverURL, agentInfo, callback)
+## getAgentInfo(agentInfo, callback)
 retrives agent info base on _id.
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agentInfo | agentInfo must specify _id - ex: _id: "1234" |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="getAgentLogs"></a>
-## getAgentLogs(serverURL, agentInfo, callback)
+## getAgentLogs(agentInfo, callback)
 retrives agent info base on _id.
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agentInfo | agentInfo must specify _id - ex: 1234 |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="getAgentList"></a>
-## getAgentList(serverURL, callback)
+## getAgentList(callback)
 retrieves a list of all agents on a knowhow server
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="executeJob"></a>
-## executeJob(serverURL, agent, job, callback)
+## executeJob(agent, job, callback)
 Executes a job on a knowhow server
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | agent | agentInfo _id is required is requred - ex: \{_id: "1234"\} |
 | job | a json job to execute |
 | callback | callback function with parameters (error, agentInfo) |
 
 <a name="executeJobSync"></a>
-## executeJobSync(serverURL, agentInfo)
+## executeJobSync(agentInfo, job)
 Synchronous version of addAgent call
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the knowhow server URL |
 | agentInfo | json representaion of the agent to add |
+| job | to run |
 
 <a name="cancelJob"></a>
 ## cancelJob(agent, job, callback)
@@ -305,6 +322,17 @@ Retreives a list of currently executing jobs on a knowhow server
 | agent | agentInfo _id is required is requred - ex: \{_id: "1234"\} |
 | callback | callback function with parameters (error, runningJobList) |
 
+<a name="KHJob"></a>
+## KHJob(serverURL, EventHandler)
+Factory method for KHJob
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| serverURL | the url of the server |
+| EventHandler |  |
+
 <a name="listRepositories"></a>
 ## listRepositories(serverURL, callback)
 Lists all repositories on a server
@@ -320,8 +348,6 @@ Lists all repositories on a server
 ## loadRepoFromName(repoName, callback)
 loads a populated repo json object based on a name
 
- # @parma serverName - the URL of the knowhow server ex :http://localhost:3001
-
 **Kind**: global function  
 
 | Param | Description |
@@ -330,14 +356,13 @@ loads a populated repo json object based on a name
 | callback | callback function to execute when complete with parameters (error, repoObject) |
 
 <a name="addRepo"></a>
-## addRepo(serverURL, newRepo)
+## addRepo(newRepo)
 Adds a new repository to a knowhow server specified by param serverUDL
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | - the URL of the knowhow server ex :http://localhost:3001 |
 | newRepo | A json object describing the new repository with parameters (error, repoObject) |
 
 <a name="updateRepo"></a>
@@ -353,39 +378,36 @@ Modifies an existing repo obejct on a knowhow server with the values specified i
 | callback | callback functions with parameters (error, modifiedRepoObject) |
 
 <a name="deleteRepo"></a>
-## deleteRepo(serverURL, repo, callback)
+## deleteRepo(repo, callback)
 Deletes a repository on a knowhow server
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | repo | a json object representing the repo to delete - _id must be specified |
 | callback | callback function with parameters (error, deletedRepo) |
 
 <a name="loadRepo"></a>
-## loadRepo(serverURL, repo, subDir, callback)
+## loadRepo(repo, subDir, callback)
 Returns a directory tree structure starting at a specified subDir- used to load a tree widget
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | repo | a json object representing a repository to use |
 | subDir | the point in the repository to start - ex: /jobs |
 | callback | callback function with params (error, repoTree) |
 
 <a name="addFile"></a>
-## addFile(serverURL, path, newFile, content, isDirectory, callback)
+## addFile(path, newFile, content, isDirectory, callback)
 Adds a file to specified repository
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | path | the repository path of the file - ex: /jobs/myJob.json |
 | newFile | new file name |
 | content | text content of the file to add |
@@ -393,30 +415,39 @@ Adds a file to specified repository
 | callback | callback function with parameters (error, newFile) |
 
 <a name="deleteFile"></a>
-## deleteFile(serverURL, filePath, force, callback)
+## deleteFile(filePath, force, callback)
 Deletes specified file from a repository
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | filePath | the absolute directory structure of the file to delete ex /myRepo/job/myJob.json |
 | force |  |
 | callback | callback function with parameters (error, deletedFile) |
 
 <a name="saveFile"></a>
-## saveFile(serverURL, filePath, fileContent, callback)
+## saveFile(filePath, fileContent, callback)
 saves a file	in the specified filePAth on a knowhow server
 
 **Kind**: global function  
 
 | Param | Description |
 | --- | --- |
-| serverURL | the URL of the knowhow server ex :http://localhost:3001 |
 | filePath | the absolute directory path of a specified file on the knowhow server host |
 | fileContent | the text content of the file |
 | callback | callbacj function with params (error, file) |
+
+<a name="KHRepository"></a>
+## KHRepository(serverURL, EventHandler)
+Factory method for KHJob
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| serverURL | the url of the server |
+| EventHandler |  |
 
 <a name="loadFile"></a>
 ## loadFile : <code>function</code>
@@ -491,3 +522,7 @@ Loads a File from the specified repository
 ###getRunningJobsList: gets a running list of jobs on the knowhow server at <KHServerURL>
 		KHCommand getRunningJobsList <KHServerURL>
 
+
+
+##commits since last release
+incremented version fix command line doc generation Merge remote-tracking branch 'origin/master' moved to a client model for easier event management moved to a client model where events are managed for synchronous processing 0.0.3 updated documentation fix package executable error Merge remote-tracking branch 'origin/master' fixed event list Update README.md 0.0.2 updated documentation configured readme generation fixed js doc issues refactored fix compile error initial add first commit
