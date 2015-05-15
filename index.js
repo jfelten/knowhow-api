@@ -13,7 +13,7 @@ function KHClient(serverURL) {
 	self.serverURL = serverURL;
 	self.khEventHandler = new require('./kh-api/kh-events-handler')(serverURL);
 	self.khRepository = require('./kh-api/kh-repository')(serverURL, self.khEventHandler);
-	self.khJob = require('./kh-api/kh-job')(serverURL, self.khEventHandler);
+	self.khJob = require('./kh-api/kh-job')(serverURL, self.khEventHandler,self);
 	self.khAgent = new require('./kh-api/kh-agent')(serverURL, self.khEventHandler);
 	self.khWorkflow = require('./kh-api/kh-workflow');
 	
