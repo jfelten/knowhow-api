@@ -16,7 +16,7 @@ var executeJob = function(agent, job, callback) {
 	if (job.jobRef) {
 		console.log("jobref detected - getting job: "+job.jobRef);
 		repoName = job.jobRef.split(':')[0];
-		khRepo.loadRepoFromName(this.serverURL, repoName, function(err, loadedRepo) {
+		this.khClient.khRepository.loadRepoFromName(repoName, function(err, loadedRepo) {
 			if (err) {
 				callback(err);
 				return;
@@ -26,7 +26,7 @@ var executeJob = function(agent, job, callback) {
 			if (path && path.indexOf[0] != '/') {
 				path = '/'+path;
 			}
-			khRepo.loadFile(this.serverURL,loadedRepo, loadedRepo.path+path, function (err, jobFromRepo) {
+			this.khClient.khRepository.loadFile(loadedRepo, loadedRepo.path+path, function (err, jobFromRepo) {
 				 if (err) {
 				 	callback(err);
 				 	return;
@@ -193,32 +193,36 @@ var getRunningJobsList = function(callback) {
  * @param serverURL the url of the server
  * @param EventHandler
  */
-function KHJob(serverURL, khEventHandler){
+function KHJob(serverURL, khEventHandler, khClient){
 	self=this;
 	self.serverURL = serverURL;
 	self.khEventHandler = khEventHandler;
+	self.khClient = khClient;
 	self.khEventHandler.on("job-complete", function(completedAgent, completedJob) {
 		console.log("done event");
 		
-		if (jobQueue[completedAgent._id][completedJob.id]) {
+		if (jobQueue[completedAgent._id] && jobQueue[completedAgent._id][completedJob.id]) {
 			jobQueue[completedAgent._id][completedJob.id]();
 			delete jobQueue[completedAgent._id][completedJob.id];
 		}
 	});
 	self.khEventHandler.on("job-error", function(errorAgent, errorJob) {
-		if (jobQueue[completedAgent._id][completedJob.id]) {
-			jobQueue[completedAgent._id][completedJob.id]();
-			delete jobQueue[completedAgent._id][completedJob.id];
+		console.log(jobQueue);
+		console.log(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+" id: "+errorAgent._id);
+		if (jobQueue[errorAgent._id] && jobQueue[errorAgent._id][errorJob.id]) {
+			jobQueue[errorAgent._id][errorJob.id]();
+			delete jobQueue[errorAgent._id][errorJob.id];
 		}
 	});
 	self.khEventHandler.on("job-cancel", function(cancelAgent, cancelJob) {
-		if (jobQueue[completedAgent._id][completedJob.id]) {
-			jobQueue[completedAgent._id][completedJob.id]();
-			delete jobQueue[completedAgent._id][completedJob.id];
+		console.log(cancelAgent);
+		if (jobQueue[cancelAgent._id] && jobQueue[cancelAgent._id][cancelJob.id]) {
+			jobQueue[cancelAgent._id][cancelJob.id]();
+			delete jobQueue[cancelAgent._id][cancelJob.id];
 		}
 	});
 	
-	self.executeJob = executeJob.bind({serverURL: serverURL});
+	self.executeJob = executeJob.bind({serverURL: serverURL, khClient: khClient});
 	self.executeJobSync = executeJobSync.bind({serverURL: serverURL});
 	self.cancelJob = cancelJob.bind({serverURL: serverURL});
 	self.getRunningJobsList = getRunningJobsList.bind({serverURL: serverURL});
