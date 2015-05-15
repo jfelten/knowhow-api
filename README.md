@@ -525,4 +525,26 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-incremented version fix command line doc generation Merge remote-tracking branch 'origin/master' moved to a client model for easier event management moved to a client model where events are managed for synchronous processing 0.0.3 updated documentation fix package executable error Merge remote-tracking branch 'origin/master' fixed event list Update README.md 0.0.2 updated documentation configured readme generation fixed js doc issues refactored fix compile error initial add first commit
+		Update README.md
+ 		0.0.5
+ 		updated documentation
+ 		incremented version
+ 		fix command line doc generation
+ 		Merge remote-tracking branch 'origin/master'
+ 		moved to a client model for easier event management
+ 		moved to a client model where events are managed for synchronous processing
+ 		0.0.3
+ 		updated documentation
+ 		fix package executable error
+ 		Merge remote-tracking branch 'origin/master'
+ 		fixed event list
+ 		Update README.md
+ 		0.0.2
+ 		updated documentation
+ 		configured readme generation
+ 		fixed js doc issues
+ 		refactored
+ 		fix compile error
+ 		initial add
+ 		first commit
+
