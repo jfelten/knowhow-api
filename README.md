@@ -525,9 +525,14 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-		Update README.md
+		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		fix execution issues
+ 		job execution fixes
+ 		0.0.6
+ 		updated documentation
  		0.0.5
  		updated documentation
+ 		Update README.md
  		incremented version
  		fix command line doc generation
  		Merge remote-tracking branch 'origin/master'
