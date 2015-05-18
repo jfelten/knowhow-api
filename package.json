@@ -27,6 +27,7 @@
   "homepage": "https://github.com/jfelten/knowhow-api",
   "dependencies": {
     "async": "^0.9.0",
+    "knowhow-server": "0.0.31",
     "request": "^2.55.0",
     "socket.io-client": "^1.3.5"
   }
