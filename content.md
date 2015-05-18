@@ -1,4 +1,4 @@
-#knowhow-api
+#knowhow-api [![Build Status](https://travis-ci.org/jfelten/knowhow-api.svg?branch=master)](https://travis-ci.org/jfelten/knowhow-api)
 
 This is a node.js api for connect and manipulating a knowhow server.  A command line tool that exposes the API to bash, KHCommand, is also provided for shell scripting.  Uses of this API include:
 
@@ -20,7 +20,7 @@ This is installed by default when installing knowhow package.  If you want to in
 
 		var serverURL = "http://localhost:3001";
 		var khClient =  require('knowhow-api')(serverURL);
-		khClient.khRepository.listRepositories(khServer,function(err, repos) {
+		khClient.khRepository.listRepositories(function(err, repos) {
 		  	if (err) {
 		  		console.log("unable to get repositories: "+err.message);
 				console.log(err.stack);
@@ -39,7 +39,7 @@ or using KHCommand
 		var serverURL = "http://localhost:3001";
 		var khClient =  require('knowhow-api')(serverURL);
 		testJob = { "jobRef": "MyRepo://jobs/dummyJob.json"}
-		khClient.khJob.executeJob(serverURL, agent, createAgentJob, function (err, result) {
+		khClient.khJob.executeJob(agent, createAgentJob, function (err, result) {
 			
 		});
 		
