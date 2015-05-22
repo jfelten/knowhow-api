@@ -20,17 +20,38 @@ var getCommandMap = function(khClient) {
 		"addAgent": {
 			"func": khClient.khAgent.addAgent,
 			"usage": "KHCommand addAgent <KHServerURL> <agent.json>",
-			"description" : "adds agent specified in <agent.json> from KH Server at <KHServerURL>" 
+			"description" : "adds agent specified in <agent.json> from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"deleteAgent": {
 			"func": khClient.khAgent.deleteAgent,
 			"usage": "KHCommand deleteAgent <KHServerURL> <agent.json>",
-			"description" : "deletes agent specified in <agent.json> from KH Server at <KHServerURL>"
+			"description" : "deletes agent specified in <agent.json> from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"updateAgent": {
 			"func": khClient.khAgent.updateAgent,
 			"usage": "KHCommand updateAgent <KHServerURL> <agent.json>",
-			"description": "updates agent specified in <agent.json> from KH Server at <KHServerURL>"
+			"description": "updates agent specified in <agent.json> from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
+		},
+		"getAgentInfo": {
+			"func": khClient.khAgent.getAgentInfo,
+			"usage": "KHCommand getAgentInfo <KHServerURL> <agent.json>",
+			"description": "updates agent specified in <agent.json> from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"listAgents":  {
 			"func": khClient.khAgent.getAgentList,
@@ -40,7 +61,11 @@ var getCommandMap = function(khClient) {
 		"getAgentLogs": {
 			"func": khClient.khAgent.getAgentLogs,
 			"usage": "KHCommand getAgentLogs <KHServerURL> <agent.json>",
-			"description": "gets agent logs specified in <agent.json> from KH Server at <KHServerURL>"
+			"description": "gets agent logs specified in <agent.json> from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"listRepositories": {
 		 	"func": khClient.khRepository.listRepositories,
@@ -50,27 +75,47 @@ var getCommandMap = function(khClient) {
 		"addRepo" : {
 			"func" : khClient.khRepository.addRepo,
 			"usage": "KHCommand addRepo <KHServerURL> <repo.json>",
-			"description": "adds a repository specifified in <repo.json> on the knowhow server at <KHServerURL>"
+			"description": "adds a repository specifified in <repo.json> on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"updateRepo" : {
 			"func": khClient.khRepository.updateRepo,
 			"usage": "KHCommand updateRepo <KHServerURL> <repo.json>",
-			"description": "updates repository specifified in <repo.json> on the knowhow server at <KHServerURL>"
+			"description": "updates repository specifified in <repo.json> on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"deleteRepo" : {
 			"func": khClient.khRepository.deleteRepo,
 			"usage": "KHCommand deleteRepo <KHServerURL> <repo.json>",
-			"description": "deletes a repository specifified in <repo.json> on the knowhow server at <KHServerURL>"
+			"description": "deletes a repository specifified in <repo.json> on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"loadRepo" : { 
 			"func" : khClient.khRepository.loadRepo,
 			"usage": "KHCommand loadRepo <KHServerURL> <repo.json>",
-			"description": "loads a repository specifified in <repo.json> on the knowhow server at <KHServerURL>"
+			"description": "loads a repository specifified in <repo.json> on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"loadRepoFromName" : {
 			"func": khClient.khRepository.loadRepoFromName,
 			"usage": "KHCommand loadRepoFromName <KHServerURL> <repo.json>",
-			"description": "loads a repository based on repoName specifified in <repo.json> on the knowhow server at <KHServerURL>"
+			"description": "loads a repository based on repoName specifified in <repo.json> on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
 		},
 		"loadFile" : {
 			"func": khClient.khRepository.loadFile,
@@ -95,12 +140,22 @@ var getCommandMap = function(khClient) {
 		"executeJob" : {
 			"func": khClient.khJob.executeJob,
 			"usage": "KHCommand cancelJob <KHServerURL> <agent.json> <job.json or jobURL>",
-			"description": "executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>"
+			"description": "executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				args[1] = JSON.parse(args[1]);
+				return args;
+			}
 		},
 		"cancelJob" : {
 			"func": khClient.khJob.cancelJob,
 			"usage": "KHCommand cancelJob <KHServerURL> <agent.json> <job.json>",
-			"description": "cancels a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>"
+			"description": "cancels a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				args[1] = JSON.parse(args[1]);
+				return args;
+			} 
 			
 		},
 		"getRunningJobsList" : {
@@ -141,6 +196,9 @@ var execute = function(command, serverURL, arguments) {
 		khClient.end();
 		process.exit(code=0);
 	} else {
+		if (cmd.processArgs) {
+			arguments = cmd.processArgs(arguments);
+		}
 		//execute the command
 		arguments.push(function(err,result) {
 			if (err) {
@@ -148,9 +206,9 @@ var execute = function(command, serverURL, arguments) {
 			} else {
 				console.log(result);
 			}
-			console.log("complete!");
+			console.log("KHCommand complete!");
 			khClient.end();
-			process.exit(code=0);
+			process.exit(0);
 		});
 		cmd.func.apply(null,arguments); 
 	}

@@ -10,7 +10,7 @@ var inProgressDeletes = {};
  */
 var listRepositories = function(callback) {
   
-  console.log(callback);
+  //console.log(callback);
   request.get(this.serverURL+'/repo/listRepositories',
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
@@ -47,21 +47,21 @@ var loadRepoFromName = function(repoName, callback) {
     function (error, response, body) {
 
         if (error || response.statusCode != 200) {
-        	console.log("error!!!");
+        	console.error("error!!!");
             if (!error) {
     			callback(new Error("response: "+response.statusCode+" "+body)); 
         	} else {
             	callback(error);
             }
         } else {
-        	console.log(body);
+        	//console.log(body);
 	        var jsonObject = JSON.parse(body);
 	        	  if (jsonObject == undefined) {
 	        	  	jsonObject = {};
 	        	  }
 	        callback(undefined, jsonObject);
 	    }
-	    console.log("complete!!!");
+	    console.log("load repo complete!!!");
     }
  );
 	
@@ -77,7 +77,7 @@ var addRepo = function(newRepo, callback) {
 	var data = {
 	    	newRepo: newRepo,
 	    };
-	console.log(data);
+	//console.log(data);
 	request.post(this.serverURL+'/repo/newFileRepo', {form: data},
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
@@ -176,7 +176,7 @@ var loadRepo = function(repo, subDir, callback) {
 	            	callback(error);
 	            }
 	        } else {
-	        	console.log(body);
+	        	//console.log(body);
 		        var jsonObject = JSON.parse(body);
 	            	  if (jsonObject == undefined) {
 	            	  	jsonObject = {};
@@ -237,9 +237,12 @@ var addFile = function(path, newFile, content, isDirectory, callback) {
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	        	if (!error) {
-	        		console.log(response);
+	        		console.error("error saving "+path+"/"+newFile+" status code ="+response.statusCode+" ");
+	        		console.error(body);
 	        		callback(new Error("response: "+response.statusCode+" "+body)); 
 	        	} else {
+	        		console.error(error.message);
+	        		console.error(error.stack);
 	            	callback(error);
 	            }
 	        } else {
@@ -268,7 +271,7 @@ var addFile = function(path, newFile, content, isDirectory, callback) {
  * @param callback - callback function with parameters (error, deletedFile)
  */
 var deleteFile = function(filePath, force, callback) {
- request.get(encodeURIComponent(this.serverURL+'/api/deleteFile?fileName='+filePath),
+ request.get(this.serverURL+'/api/deleteFile?fileName='+filePath,
     function (error, response, body) {
         if (error || response.statusCode != 200) {
             if (!error) {
@@ -277,7 +280,7 @@ var deleteFile = function(filePath, force, callback) {
             	callback(error);
             }
         } else {
-	        var jsonObject = JSON.parse(response);
+	        var jsonObject = response;
 	        	  if (jsonObject == undefined) {
 	        	  	jsonObject = {};
 	        	  }
@@ -298,7 +301,7 @@ var deleteFile = function(filePath, force, callback) {
 var saveFile =  function(filePath,fileContent,callback) {
 	console.log(fileContent);
 	console.log(encodeURIComponent(JSON.stringify(fileContent)));
-	 var saveURL = this.serverURL+'/api/saveFile?fileName='+filePath+'&isEncoded=true&data='+encodeURIComponent(fileContent);
+	 var saveURL = this.serverURL+'/api/saveFile?fileName='+encodeURIComponent(filePath)+'&isEncoded=false&data='+encodeURIComponent(fileContent);
 	 console.log(saveURL);
 	 request.get(saveURL ,
 	    function (error, response, body) {

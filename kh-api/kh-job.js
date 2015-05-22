@@ -13,9 +13,10 @@ var jobQueue={};
  */
 var executeJob = function(agent, job, callback) {
 
+	
 	if (job.jobRef) {
 		console.log("jobref detected - getting job: "+job.jobRef);
-		repoName = job.jobRef.split(':')[0];
+		repoName = job.jobRef.split('://')[0];
 		this.khClient.khRepository.loadRepoFromName(repoName, function(err, loadedRepo) {
 			if (err) {
 				callback(err);
@@ -28,39 +29,53 @@ var executeJob = function(agent, job, callback) {
 			}
 			this.khClient.khRepository.loadFile(loadedRepo, loadedRepo.path+path, function (err, jobFromRepo) {
 				 if (err) {
+				 	console.log(err.stack);
 				 	callback(err);
 				 	return;
-				 }
-				 console.log("loaded: "+jobFromRepo);
-				 
-				 if (job.script && job.script.env) {
-				 	if (!jobFromRepo.script) {
-				 		jobFromRepo.script = {
-				 			env: {}
-				 		};
-				 	} else if (!job.script.env) {
-				 		job.script.env = {};
-				 	}
-				 	var keys = Object.keys(job.script.env)
-				 	for (index in keys) {
-				 		var VAR = keys[index];
-				 		jobFromRepo.script.env[VAR] = job.script.env[VAR];
-				 		console.log(VAR+" = "+jobFromRepo.script.env[VAR]);;
-				 	}
-				 }
-				 if (job.env) {
-				 	var keys = Object.keys(job.env);
-				 	for (VAR in keys) {
-				 		var VAR = keys[index];
-				 		jobFromRepo.env[VAR] = job.env[VAR];
-				 	}
-				 }
-				 console.log(require('util').inspect(jobFromRepo, {depth:null}));
-				 executeOnServer(this.serverURL, agent, jobFromRepo, callback);
+				 } else {
+					 console.log("loaded: "+jobFromRepo);
+					 
+					 if (job.script && job.script.env) {
+					 	if (!jobFromRepo.script) {
+					 		jobFromRepo.script = {
+					 			env: {}
+					 		};
+					 	} else if (!job.script.env) {
+					 		job.script.env = {};
+					 	}
+					 	var keys = Object.keys(job.script.env)
+					 	for (index in keys) {
+					 		var VAR = keys[index];
+					 		jobFromRepo.script.env[VAR] = job.script.env[VAR];
+					 		console.log(VAR+" = "+jobFromRepo.script.env[VAR]);;
+					 	}
+					 }
+					 if (job.env) {
+					 	var keys = Object.keys(job.env);
+					 	for (VAR in keys) {
+					 		var VAR = keys[index];
+					 		jobFromRepo.env[VAR] = job.env[VAR];
+					 	}
+					 }
+					 console.log(require('util').inspect(jobFromRepo, {depth:null}));
+					 if (!agent.id) {
+						this.khClient.khAgent.getAgentInfo(agent, function(err, agentInfo) {
+							executeOnServer(this.serverURL, agentInfo, jobFromRepo, callback);
+						});
+					} else {
+						executeOnServer(this.serverURL, agent, jobFromRepo, callback);
+					}
+				}
 			});
 		});
 	} else {
-		executeOnServer(this.serverURL, agent, job, callback);
+		if (!agent.id) {
+			this.khClient.khAgent.getAgentInfo(agent, function(err, agentInfo) {
+				executeOnServer(this.serverURL, agentInfo, job, callback);
+			});
+		} else {
+			executeOnServer(this.serverURL, agent, job, callback);
+		}
 	}
 
 }
@@ -98,6 +113,9 @@ function agentEquals(agent1,agent2) {
 }
 
 var executeOnServer = function(serverURL, agent, job, callback) {
+	
+	 console.log("posting to: "+serverURL+'/api/execute on agent '+agent.user+'@'+agent.host+':'+agent.port+'('+agent._id+')');
+	
 	if (!jobQueue[agent._id]) {
 		jobQueue[agent._id] = {};
 	}
@@ -106,8 +124,7 @@ var executeOnServer = function(serverURL, agent, job, callback) {
 	    	khAgent: agent,
 	    	job: job
 	    };
-	 console.log("posting to: "+serverURL+'/api/execute');
-	 console.log(data);
+	 //console.log(data);
 	 request({ method: 'POST'
 	    , uri: serverURL+'/api/execute'
 	    , body:data
@@ -115,7 +132,7 @@ var executeOnServer = function(serverURL, agent, job, callback) {
     }, function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
-        			callback(new Error("response: "+response.statusCode+" "+body)); 
+        			callback(new Error("response: "+response.statusCode+" "+body.message)); 
 	        	} else {
 	            	callback(error);
 	            }
@@ -199,25 +216,25 @@ function KHJob(serverURL, khEventHandler, khClient){
 	self.khEventHandler = khEventHandler;
 	self.khClient = khClient;
 	self.khEventHandler.on("job-complete", function(completedAgent, completedJob) {
-		console.log("done event");
 		
+		console.log(completedJob.id+" done on agent: "+completedAgent.user+"@"+completedAgent.host+":"+completedAgent.port+"("+completedAgent._id+")");
+		console.log(jobQueue);
 		if (jobQueue[completedAgent._id] && jobQueue[completedAgent._id][completedJob.id]) {
-			jobQueue[completedAgent._id][completedJob.id]();
+			jobQueue[completedAgent._id][completedJob.id](undefined,completedJob);
 			delete jobQueue[completedAgent._id][completedJob.id];
 		}
 	});
 	self.khEventHandler.on("job-error", function(errorAgent, errorJob) {
-		console.log(jobQueue);
 		console.log(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+" id: "+errorAgent._id);
 		if (jobQueue[errorAgent._id] && jobQueue[errorAgent._id][errorJob.id]) {
-			jobQueue[errorAgent._id][errorJob.id]();
+			jobQueue[errorAgent._id][errorJob.id](new Error(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+"("+errorAgent._id)+")");
 			delete jobQueue[errorAgent._id][errorJob.id];
 		}
 	});
 	self.khEventHandler.on("job-cancel", function(cancelAgent, cancelJob) {
 		console.log(cancelAgent);
 		if (jobQueue[cancelAgent._id] && jobQueue[cancelAgent._id][cancelJob.id]) {
-			jobQueue[cancelAgent._id][cancelJob.id]();
+			jobQueue[cancelAgent._id][cancelJob.id](new Error(cancelJob.id +"job error on "+cancelAgent.user+"@"+cancelAgent.host+":"+cancelAgent.port+"("+cancelAgent._id+")"));
 			delete jobQueue[cancelAgent._id][cancelJob.id];
 		}
 	});

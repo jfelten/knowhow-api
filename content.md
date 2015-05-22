@@ -45,7 +45,7 @@ or using KHCommand
 		
 or using KHCommand
 		
-		KHCommand executeJob http://localhost:3001 { "jobRef": "MyRepo://jobs/dummyJob.json"}
+		KHCommand executeJob http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}' '{"jobRef": "zenzic:///jobs/dummyJob.json"}'
 
 ##Add/delete an agent
 
@@ -67,6 +67,9 @@ or using KHCommand
 	khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
 	
 	});
+	
+or using KHCommand:
+	KHCommand.sh addAgent http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}'
 
 ##other examples:
 
