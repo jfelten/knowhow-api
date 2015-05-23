@@ -12,6 +12,9 @@
 ###updateAgent: updates agent specified in <agent.json> from KH Server at <KHServerURL>
 		KHCommand updateAgent <KHServerURL> <agent.json>
 
+###getAgentInfo: updates agent specified in <agent.json> from KH Server at <KHServerURL>
+		KHCommand getAgentInfo <KHServerURL> <agent.json>
+
 ###listAgents: lists all agents on a KH server specified bu <KHServerURL>
 		KHCommand listAgents <KHServerURL>
 

@@ -45,7 +45,7 @@ or using KHCommand
 		
 or using KHCommand
 		
-		KHCommand executeJob http://localhost:3001 { "jobRef": "MyRepo://jobs/dummyJob.json"}
+		KHCommand executeJob http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}' '{"jobRef": "zenzic:///jobs/dummyJob.json"}'
 
 ##Add/delete an agent
 
@@ -67,6 +67,9 @@ or using KHCommand
 	khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
 	
 	});
+	
+or using KHCommand:
+	KHCommand.sh addAgent http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}'
 
 ##other examples:
 
@@ -477,6 +480,9 @@ Loads a File from the specified repository
 ###updateAgent: updates agent specified in <agent.json> from KH Server at <KHServerURL>
 		KHCommand updateAgent <KHServerURL> <agent.json>
 
+###getAgentInfo: updates agent specified in <agent.json> from KH Server at <KHServerURL>
+		KHCommand getAgentInfo <KHServerURL> <agent.json>
+
 ###listAgents: lists all agents on a KH server specified bu <KHServerURL>
 		KHCommand listAgents <KHServerURL>
 
@@ -525,7 +531,11 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-		updated version
+		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		fixed job execution api and agent createion api. properly parse json objects from command line tool. Correct callback after job execution. Updated documentation to reflect correct usage examples
+ 		0.0.9
+ 		updated documentation
+ 		updated version
  		updated test
  		added travis buiuld icon
  		added build test
