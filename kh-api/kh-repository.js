@@ -198,7 +198,7 @@ var loadRepo = function(repo, subDir, callback) {
  * @callback - callback function with parameters (error, fileContent)
  */	  
 var loadFile = function(repo, path, callback) {
-  	  console.log('load file');
+  	  console.log('load file: '+path);
 	  
        request.get(this.serverURL+'/api/fileContent?repo='+repo+'&file='+path,
 		    function (error, response, body) {

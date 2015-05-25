@@ -139,9 +139,10 @@ var getCommandMap = function(khClient) {
 		},
 		"executeJob" : {
 			"func": khClient.khJob.executeJob,
-			"usage": "KHCommand cancelJob <KHServerURL> <agent.json> <job.json or jobURL>",
+			"usage": "KHCommand executeJob <KHServerURL> <agent.json> <job.json >",
 			"description": "executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>",
 			"processArgs": function (args) {
+				console.log(args[0]);
 				args[0] = JSON.parse(args[0]);
 				args[1] = JSON.parse(args[1]);
 				return args;
@@ -202,13 +203,18 @@ var execute = function(command, serverURL, arguments) {
 		//execute the command
 		arguments.push(function(err,result) {
 			if (err) {
+				console.log("KHCommand error!");
 				console.error(err.message);
+				khClient.end();
+				process.exit(1);
 			} else {
+				console.log("KHCommand sucess!");
 				console.log(result);
+				khClient.end();
+				process.exit(0);
 			}
-			console.log("KHCommand complete!");
-			khClient.end();
-			process.exit(0);
+			
+			
 		});
 		cmd.func.apply(null,arguments); 
 	}
