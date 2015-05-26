@@ -531,7 +531,9 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-		0.0.11
+		0.0.12
+ 		updated documentation
+ 		0.0.11
  		updated documentation
  		fix KHCommand error handling
  		0.0.10
