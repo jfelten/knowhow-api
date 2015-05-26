@@ -531,7 +531,9 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-		fix KHCommand error handling
+		0.0.11
+ 		updated documentation
+ 		fix KHCommand error handling
  		0.0.10
  		updated documentation
  		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
