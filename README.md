@@ -531,7 +531,11 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-		0.0.12
+		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		fix environment substitution and add more verbose command output
+ 		0.0.13
+ 		updated documentation
+ 		0.0.12
  		updated documentation
  		0.0.11
  		updated documentation
