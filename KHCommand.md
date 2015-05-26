@@ -52,7 +52,7 @@
 		KHCommand saveFile <KHServerURL> <content>
 
 ###executeJob: executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>
-		KHCommand cancelJob <KHServerURL> <agent.json> <job.json or jobURL>
+		KHCommand executeJob <KHServerURL> <agent.json> <job.json >
 
 ###cancelJob: cancels a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>
 		KHCommand cancelJob <KHServerURL> <agent.json> <job.json>

@@ -520,7 +520,7 @@ Loads a File from the specified repository
 		KHCommand saveFile <KHServerURL> <content>
 
 ###executeJob: executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>
-		KHCommand cancelJob <KHServerURL> <agent.json> <job.json or jobURL>
+		KHCommand executeJob <KHServerURL> <agent.json> <job.json >
 
 ###cancelJob: cancels a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>
 		KHCommand cancelJob <KHServerURL> <agent.json> <job.json>
@@ -531,7 +531,14 @@ Loads a File from the specified repository
 
 
 ##commits since last release
-		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+		0.0.12
+ 		updated documentation
+ 		0.0.11
+ 		updated documentation
+ 		fix KHCommand error handling
+ 		0.0.10
+ 		updated documentation
+ 		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
  		fixed job execution api and agent createion api. properly parse json objects from command line tool. Correct callback after job execution. Updated documentation to reflect correct usage examples
  		0.0.9
  		updated documentation
