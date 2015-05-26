@@ -142,7 +142,8 @@ var getCommandMap = function(khClient) {
 			"usage": "KHCommand executeJob <KHServerURL> <agent.json> <job.json >",
 			"description": "executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>",
 			"processArgs": function (args) {
-				console.log(args[0]);
+				console.log("agent="+args[0]);
+				console.log("job="+args[1]);
 				args[0] = JSON.parse(args[0]);
 				args[1] = JSON.parse(args[1]);
 				return args;

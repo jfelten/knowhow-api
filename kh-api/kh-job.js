@@ -4,6 +4,11 @@ var async = require('async');
 
 var jobQueue={};
 
+
+function agentToString(agent) {
+	return agent.user+'@'+agent.host+':'+agent.port+'('+agent._id+')';
+}
+
 /**
  * Executes a job on a knowhow server
  *
@@ -33,7 +38,7 @@ var executeJob = function(agent, job, callback) {
 				 	callback(err);
 				 	return;
 				 } else {
-					 console.log("loaded: "+jobFromRepo);
+					 console.log("loaded: "+jobFromRepo.id);
 					 
 					 if (job.script && job.script.env) {
 					 	if (!jobFromRepo.script) {
@@ -51,9 +56,13 @@ var executeJob = function(agent, job, callback) {
 					 	}
 					 }
 					 if (job.env) {
+					 	if (!jobFromRepo.env) {
+					 		jobFromRepo.env = {};
+					 	}
 					 	var keys = Object.keys(job.env);
-					 	for (VAR in keys) {
+					 	for (index in keys) {
 					 		var VAR = keys[index];
+					 		console.log("substituing: "+VAR);
 					 		jobFromRepo.env[VAR] = job.env[VAR];
 					 	}
 					 }
@@ -226,6 +235,7 @@ function KHJob(serverURL, khEventHandler, khClient){
 	});
 	self.khEventHandler.on("job-error", function(errorAgent, errorJob) {
 		console.log(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+" id: "+errorAgent._id);
+		console.error(job.message);
 		if (jobQueue[errorAgent._id] && jobQueue[errorAgent._id][errorJob.id]) {
 			jobQueue[errorAgent._id][errorJob.id](new Error(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+"("+errorAgent._id)+")");
 			delete jobQueue[errorAgent._id][errorJob.id];
@@ -237,6 +247,12 @@ function KHJob(serverURL, khEventHandler, khClient){
 			jobQueue[cancelAgent._id][cancelJob.id](new Error(cancelJob.id +"job error on "+cancelAgent.user+"@"+cancelAgent.host+":"+cancelAgent.port+"("+cancelAgent._id+")"));
 			delete jobQueue[cancelAgent._id][cancelJob.id];
 		}
+	});
+	self.khEventHandler.on("execution-error", function(agent, command) {
+		console.log("execution error on: "+agentToString(agent)+" "+command.output+" return code: "+command.returnCode);
+	});
+	self.khEventHandler.on("execution-complete", function(agent, command) {
+		console.log("execution complete on: "+agentToString(agent)+" "+command.output);
 	});
 	
 	self.executeJob = executeJob.bind({serverURL: serverURL, khClient: khClient});
