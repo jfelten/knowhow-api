@@ -202,21 +202,28 @@ var execute = function(command, serverURL, arguments) {
 			arguments = cmd.processArgs(arguments);
 		}
 		//execute the command
-		arguments.push(function(err,result) {
-			if (err) {
-				console.log("KHCommand error!");
-				console.error(err.message);
-				khClient.end();
-				process.exit(1);
-			} else {
-				console.log("KHCommand sucess!");
-				console.log(result);
-				khClient.end();
-				process.exit(0);
-			}
-			
-			
-		});
+		try {
+			arguments.push(function(err,result) {
+				if (err) {
+					console.log("KHCommand error!");
+					console.error(err.message);
+					console.error(err.stack);
+					khClient.end();
+					process.exit(1);
+				} else {
+					console.log("KHCommand sucess!");
+					console.log(result);
+					khClient.end();
+					process.exit(0);
+				}
+				
+				
+			});
+		} catch (err) {
+			console.error(err.message);
+			khClient.end();
+			process.exit(1);
+		}
 		cmd.func.apply(null,arguments); 
 	}
 	

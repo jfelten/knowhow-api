@@ -141,6 +141,7 @@ var executeOnServer = function(serverURL, agent, job, callback) {
     }, function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
+	            	console.error(body);
         			callback(new Error("response: "+response.statusCode+" "+body.message)); 
 	        	} else {
 	            	callback(error);
@@ -226,7 +227,7 @@ function KHJob(serverURL, khEventHandler, khClient){
 	self.khClient = khClient;
 	self.khEventHandler.on("job-complete", function(completedAgent, completedJob) {
 		
-		console.log(completedJob.id+" done on agent: "+completedAgent.user+"@"+completedAgent.host+":"+completedAgent.port+"("+completedAgent._id+")");
+		console.log(completedJob.id+" done on agent: "+agentToString(completedAgent));
 		console.log(jobQueue);
 		if (jobQueue[completedAgent._id] && jobQueue[completedAgent._id][completedJob.id]) {
 			jobQueue[completedAgent._id][completedJob.id](undefined,completedJob);
@@ -234,17 +235,17 @@ function KHJob(serverURL, khEventHandler, khClient){
 		}
 	});
 	self.khEventHandler.on("job-error", function(errorAgent, errorJob) {
-		console.log(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+" id: "+errorAgent._id);
-		console.error(job.message);
+		console.log(errorJob.id +"error on "+agentToString(errorAgent));
+		console.error(errorJob.message);
 		if (jobQueue[errorAgent._id] && jobQueue[errorAgent._id][errorJob.id]) {
-			jobQueue[errorAgent._id][errorJob.id](new Error(errorJob.id +"job error on "+errorAgent.user+"@"+errorAgent.host+":"+errorAgent.port+"("+errorAgent._id)+")");
+			jobQueue[errorAgent._id][errorJob.id](new Error(errorJob.id +"job error on "+agentToString(errorAgent)));
 			delete jobQueue[errorAgent._id][errorJob.id];
 		}
 	});
 	self.khEventHandler.on("job-cancel", function(cancelAgent, cancelJob) {
-		console.log(cancelAgent);
+		console.log(cancelJob.id +"cancelled on "+agentToString(cancelAgent));
 		if (jobQueue[cancelAgent._id] && jobQueue[cancelAgent._id][cancelJob.id]) {
-			jobQueue[cancelAgent._id][cancelJob.id](new Error(cancelJob.id +"job error on "+cancelAgent.user+"@"+cancelAgent.host+":"+cancelAgent.port+"("+cancelAgent._id+")"));
+			jobQueue[cancelAgent._id][cancelJob.id](new Error(cancelJob.id +"job error on "+agentToString(cancelAgent)));
 			delete jobQueue[cancelAgent._id][cancelJob.id];
 		}
 	});
