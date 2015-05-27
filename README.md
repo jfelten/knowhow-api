@@ -532,6 +532,10 @@ Loads a File from the specified repository
 
 ##commits since last release
 		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		0.0.14
+ 		updated documentation
+ 		fix runtime error - make error handling a little mroe robust
+ 		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
  		fix environment substitution and add more verbose command output
  		0.0.13
  		updated documentation
