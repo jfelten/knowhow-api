@@ -137,6 +137,31 @@ var getCommandMap = function(khClient) {
 			"usage": "KHCommand saveFile <KHServerURL> <content>",
 			"description": "saves a file with content <content> at repository location <fileURL> on the knowhow server at <KHServerURL>"
 		},
+		"loadURL" : {
+			"func": khClient.khRepository.loadURL,
+			"usage": "KHCommand saveFile <KHServerURL> <a knowhow URL>",
+			"description": "returns the content of any text file based on a knowhow url"
+		},
+		"importFileRepositoryFromGit" : {
+			"func": khClient.khRepository.importFileRepositoryFromGit,
+			"usage": "KHCommand importFileRepositoryFromGit <KHServerURL> <new repo json representation> <gitURL> <gitUser> <gitPassword>",
+			"description": "imports a knowhow repository into a server based on a git URL"
+		},
+		"importFileRepositoryFromServer" : {
+			"func": khClient.khRepository.importFileRepositoryFromServer,
+			"usage": "KHCommand importFileRepositoryFromServer <KHServerURL> <new repo json representation> <KHHostRepoName> <serverHost> <port>",
+			"description": "imports a knowhow repository into a server based on a git URL"
+		},
+		"importFileRepositoryFromTarBall" : {
+			"func": khClient.khRepository.importFileRepositoryFromTarBall,
+			"usage": "KHCommand importFileRepositoryFromTarBall <KHServerURL> <new repo json representation> <archive path>",
+			"description": "imports a knowhow repository into a server from a .tar.gz archive"
+		},
+		"downloadRepoAsTarBall" : {
+			"func": khClient.khRepository.downloadRepoAsTarBall,
+			"usage": "KHCommand downloadRepoAsTarBall <KHServerURL> <new repo json representation> <save path>",
+			"description": "downloads a knowhow repository from a server and saves to path as .tar.gz archive"
+		},
 		"executeJob" : {
 			"func": khClient.khJob.executeJob,
 			"usage": "KHCommand executeJob <KHServerURL> <agent.json> <job.json >",
