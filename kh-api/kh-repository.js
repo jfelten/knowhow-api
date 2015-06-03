@@ -113,7 +113,7 @@ var updateRepo = function(existingRepo,callback) {
 	    	existingRepo: existingRepo,
 	    };
 	    
-	 request.post(this.serverURL+'/repo/updateFileRepo',data,
+	 request.post(this.serverURL+'/repo/updateFileRepo',{form: data},
 	    function (error, response, body) {
 	        if (error || response.statusCode != 200) {
 	            if (!error) {
@@ -135,23 +135,40 @@ var updateRepo = function(existingRepo,callback) {
  * @param callback - callback function with parameters (error, deletedRepo)
  */
 var deleteRepo = function(repo,callback) {
-	console.log("deleting repo: "+repo._id);
-	var data = {
-	    	repo: repo,
-	    };
-	request.post(this.serverURL+'/repo/deleteFileRepo',data,
-	    function (error, response, body) {
-	        if (error || response.statusCode != 200) {
-	            if (!error) {
-        			callback(new Error("response: "+response.statusCode+" "+body)); 
-	        	} else {
-	            	callback(error);
-	            }
-	        } else {
-	        	callback();
-	        }
-	    }
-	);
+
+	var delRepo = function(repo, callback) {
+		console.log("deleting repo: "+repo._id);
+		var data = {
+		    	repo: repo
+		};
+		console.log(data);
+		request.post(this.serverURL+'/repo/deleteFileRepo', {form: data},
+		    function (error, response, body) {
+		        if (error || response.statusCode != 200) {
+		            if (!error) {
+	        			callback(new Error("response: "+response.statusCode+" "+body)); 
+		        	} else {
+		            	callback(error);
+		            }
+		        } else {
+		        	callback();
+		        }
+		    }
+		);
+	}
+
+	if (!repo._id) {
+		loadRepoFromName(repo.name, function(err, loadedRepo) {
+			if (err) {
+				callback(err);
+			} else {
+				delRepo(loadedRepo,callback);
+			}
+		});
+	} else {
+		delRepo(repo,callback);
+	}
+	
 };
 
 /**
@@ -324,6 +341,181 @@ var saveFile =  function(filePath,fileContent,callback) {
 };
 
 /**
+ * retrieves an environment object from a knowhow URL
+ *
+ * @param URL - the knowhow URL we are attempting to load
+ */
+var loadURL = function(URL, callback) {
+	repoName = job.jobRef.split('://')[0];
+	loadRepoFromName(repoName, function(err, loadedRepo) {
+		if (err) {
+			callback(err);
+			return;
+		}
+		console.log("loaded repository");
+		var path = decodeURI(URL).split('://')[1];
+		if (path && path.indexOf[0] != '/') {
+			path = '/'+path;
+		}
+		this.khClient.khRepository.loadFile(loadedRepo, loadedRepo.path+path, function (err, objectFromRepo) {
+			 if (err) {
+			 	console.log(err.stack);
+			 	callback(err);
+			 	return;
+			 } else {
+				 console.log("loaded: "+objectFromRepo.id);
+				 callback(undefined, objectFromRepo);
+			}
+		});
+	});
+	
+}
+ 
+ /**
+  * Imports a repository from a git server Url into a new file repository.
+  *
+  * @param repo a json object with the expected repo values: name and path
+  * @param gitURL - URL of the git repository
+  * @param gitUser - if supplied will attempt to use as part of the url
+  * @param gitPAssword - use only if server requires password authentication
+  * @param callback to execute when finished
+  *
+  */
+ function importFileRepositoryFromGit(repo, gitURL, gitUser, gitPassword, callback) {
+ 	repo.gitUser = gitUser;
+ 	repo.gitPassword = gitPassword;
+ 	repo.gitRepo = gitURL;
+ 	var data = {
+ 		"newRepo": repo
+ 	}
+ 	
+ 	// /repo/importRepoFromGIT
+ 	request.post(this.serverURL+'/repo/importRepoFromGIT',{form: data},
+	    function (error, response, body) {
+	        if (error || response.statusCode != 200) {
+	            if (!error) {
+        			callback(new Error("response: "+response.statusCode+" "+body)); 
+	        	} else {
+	            	callback(error);
+	            }
+	        } else {
+	        	callback(undefined,body);
+	        }
+	    }
+	);
+ 
+ }
+ 
+ /**
+  * Imports a repository from a tarball(.tar.gz) file
+  *
+  * @param repo a json object with the expected repo values: name and path
+  * @param tarBallFile - the file path of the tarball file
+  * @param callback to execute when finished
+  *
+  */
+ function importFileRepositoryFromTarBall(repo, tarBallFilePath, callback) {
+ 	console.log("uploading: "+tarBallFilePath+" to  "+this.serverURL+"/repo/uploadRepoTarBall");
+ 	var re = new RegExp('/', 'g');
+ 	var re2 = new RegExp('"', 'g');
+ 	var createRepo = repo.path.replace(re,'~')+','+repo.name;
+ 	/*
+ 	var createRepo = {
+	    	"path": repo.path.replace(re,'~'),
+	    	"name": repo.name
+	    }*/
+ 	
+ 	console.log(JSON.stringify(createRepo))
+ 	var formData = {
+	  // Pass a simple key-value pair
+	  //file: fs.createReadStream(tarBallFilePath),
+	  file: {
+	    value:  fs.createReadStream(tarBallFilePath),
+	    options: {
+	      filename: createRepo,
+	      contentType: 'application/x-gtar'
+	    }
+	  }
+	  //fileName: JSON.stringify(repo),
+	  // Pass data via Buffers
+	  //my_buffer: new Buffer([1, 2, 3]),
+	  // Pass data via Streams
+	  
+	};
+	request.post({url:this.serverURL+'/repo/uploadRepoTarBall', formData: formData}, function optionalCallback(err, httpResponse, body) {
+	  if (err) {
+	    console.error('upload failed:', err);
+	    callback(err);
+	    return;
+	  }
+	  console.log('Upload successful!  Server responded with:', body);
+	  callback(undefined, body);
+	});
+ 
+ }
+ 
+ /**
+  * Imports a repository from a a knowhow server
+  *
+  * @param repoToCreate a json object with the expected repo values: name and path
+  * @param KHHostRepoName - the name of the repo on the knowhow server we are importing from
+  * @param KHServerURL - the url of the knowhow server
+  * @param callback to execute when finished
+  *
+  */
+ function importFileRepositoryFromServer(repoToCreate, KHHostRepoName, serverHost, port, callback) {
+ 	repoToCreate.hostRepoName = KHHostRepoName;
+ 	repoToCreate.host= serverHost;
+ 	repoToCreate.port = port;
+ 	var data = {
+ 		"newRepo": repoToCreate
+ 	};
+ 	console.log("posting to: "+this.serverURL+"/repo/importRepoFromServer");
+ 	request.post(this.serverURL+'/repo/importRepoFromServer', {form: data},
+	    function (error, response, body) {
+	        if (error || response.statusCode != 200) {
+	            if (!error) {
+        			callback(new Error("response: "+response.statusCode+" "+body)); 
+	        	} else {
+	            	callback(error);
+	            }
+	        } else {
+	        	callback(undefined, body);
+	        }
+	    }
+	);
+ 
+ }
+ 
+ /**
+  * Downloads a knowhow repository as a tarball.  This tarball may be reimport as a new repository on any knowhow server.
+  *
+  * @param repo the knowhow repository to download
+  * @param savePath - where to save the tarball
+  */
+ function downloadRepoAsTarBall(repo, savePath, callback) {
+ 
+ 	var data = {
+    	repo: repo,
+    }
+    request.get(this.serverURL+'/repo/downloadRepoTarBall?name='+repo.name+"&path="+repo.path+"/",data,
+	    function (error, response, body) {
+	        if (error || response.statusCode != 200) {
+	            if (!error) {
+        			callback(new Error("response: "+response.statusCode+" "+body)); 
+	        	} else {
+	            	callback(error);
+	            }
+	        } else {
+	        	callback(undefined, savePath);
+	        }
+	    }
+	).pipe(fs.createWriteStream(savePath));
+ 
+ }
+  
+
+/**
  * Factory method for KHJob
  * @param serverURL the url of the server
  * @param EventHandler
@@ -343,8 +535,12 @@ function KHRepository(serverURL, khEventHandler){
 	self.addFile = addFile.bind({serverURL: serverURL});
 	self.deleteFile = deleteFile.bind({serverURL: serverURL});
 	self.saveFile = saveFile.bind({serverURL: serverURL});
-	
-	
+	self.loadURL - loadURL.bind({serverURL: serverURL});
+	self.importFileRepositoryFromGit = importFileRepositoryFromGit.bind({serverURL: serverURL});
+	self.importFileRepositoryFromTarBall =importFileRepositoryFromTarBall.bind({serverURL: serverURL});
+	self.importFileRepositoryFromServer = importFileRepositoryFromServer.bind({serverURL: serverURL});
+	self.downloadRepoAsTarBall = downloadRepoAsTarBall.bind({serverURL: serverURL});
+
 	return self;
 }
 module.exports = KHRepository;
@@ -360,4 +556,9 @@ exports.loadFile = loadFile;
 exports.addFile = addFile;
 exports.deleteFile = deleteFile;
 exports.saveFile = saveFile;
+exports.loadURL = loadURL;
+exports.importFileRepositoryFromGit = importFileRepositoryFromGit;
+exports.importFileRepositoryFromTarBall =importFileRepositoryFromTarBall;
+exports.importFileRepositoryFromServer = importFileRepositoryFromServer;
+exports.downloadRepoAsTarBall = downloadRepoAsTarBall;
 
