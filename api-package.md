@@ -68,6 +68,21 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#saveFile">saveFile(filePath, fileContent, callback)</a></dt>
 <dd><p>saves a file    in the specified filePAth on a knowhow server</p>
 </dd>
+<dt><a href="#loadURL">loadURL(URL)</a></dt>
+<dd><p>retrieves an environment object from a knowhow URL</p>
+</dd>
+<dt><a href="#importFileRepositoryFromGit">importFileRepositoryFromGit(repo, gitURL, gitUser, gitPAssword, callback)</a></dt>
+<dd><p>Imports a repository from a git server Url into a new file repository.</p>
+</dd>
+<dt><a href="#importFileRepositoryFromTarBall">importFileRepositoryFromTarBall(repo, tarBallFile, callback)</a></dt>
+<dd><p>Imports a repository from a tarball(.tar.gz) file</p>
+</dd>
+<dt><a href="#importFileRepositoryFromServer">importFileRepositoryFromServer(repoToCreate, KHHostRepoName, KHServerURL, callback)</a></dt>
+<dd><p>Imports a repository from a a knowhow server</p>
+</dd>
+<dt><a href="#downloadRepoAsTarBall">downloadRepoAsTarBall(repo, savePath)</a></dt>
+<dd><p>Downloads a knowhow repository as a tarball.  This tarball may be reimport as a new repository on any knowhow server.</p>
+</dd>
 <dt><a href="#KHRepository">KHRepository(serverURL, EventHandler)</a></dt>
 <dd><p>Factory method for KHJob</p>
 </dd>
@@ -327,6 +342,66 @@ saves a file	in the specified filePAth on a knowhow server
 | filePath | the absolute directory path of a specified file on the knowhow server host |
 | fileContent | the text content of the file |
 | callback | callbacj function with params (error, file) |
+
+<a name="loadURL"></a>
+## loadURL(URL)
+retrieves an environment object from a knowhow URL
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| URL | the knowhow URL we are attempting to load |
+
+<a name="importFileRepositoryFromGit"></a>
+## importFileRepositoryFromGit(repo, gitURL, gitUser, gitPAssword, callback)
+Imports a repository from a git server Url into a new file repository.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| repo | a json object with the expected repo values: name and path |
+| gitURL | URL of the git repository |
+| gitUser | if supplied will attempt to use as part of the url |
+| gitPAssword | use only if server requires password authentication |
+| callback | to execute when finished |
+
+<a name="importFileRepositoryFromTarBall"></a>
+## importFileRepositoryFromTarBall(repo, tarBallFile, callback)
+Imports a repository from a tarball(.tar.gz) file
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| repo | a json object with the expected repo values: name and path |
+| tarBallFile | the file path of the tarball file |
+| callback | to execute when finished |
+
+<a name="importFileRepositoryFromServer"></a>
+## importFileRepositoryFromServer(repoToCreate, KHHostRepoName, KHServerURL, callback)
+Imports a repository from a a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| repoToCreate | a json object with the expected repo values: name and path |
+| KHHostRepoName | the name of the repo on the knowhow server we are importing from |
+| KHServerURL | the url of the knowhow server |
+| callback | to execute when finished |
+
+<a name="downloadRepoAsTarBall"></a>
+## downloadRepoAsTarBall(repo, savePath)
+Downloads a knowhow repository as a tarball.  This tarball may be reimport as a new repository on any knowhow server.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| repo | the knowhow repository to download |
+| savePath | where to save the tarball |
 
 <a name="KHRepository"></a>
 ## KHRepository(serverURL, EventHandler)
