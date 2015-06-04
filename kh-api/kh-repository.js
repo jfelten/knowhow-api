@@ -417,7 +417,6 @@ var loadURL = function(URL, callback) {
  function importFileRepositoryFromTarBall(repo, tarBallFilePath, callback) {
  	console.log("uploading: "+tarBallFilePath+" to  "+this.serverURL+"/repo/uploadRepoTarBall");
  	var re = new RegExp('/', 'g');
- 	var re2 = new RegExp('"', 'g');
  	var createRepo = repo.path.replace(re,'~')+','+repo.name;
  	/*
  	var createRepo = {
@@ -535,7 +534,7 @@ function KHRepository(serverURL, khEventHandler){
 	self.addFile = addFile.bind({serverURL: serverURL});
 	self.deleteFile = deleteFile.bind({serverURL: serverURL});
 	self.saveFile = saveFile.bind({serverURL: serverURL});
-	self.loadURL - loadURL.bind({serverURL: serverURL});
+	self.loadURL = loadURL.bind({serverURL: serverURL});
 	self.importFileRepositoryFromGit = importFileRepositoryFromGit.bind({serverURL: serverURL});
 	self.importFileRepositoryFromTarBall =importFileRepositoryFromTarBall.bind({serverURL: serverURL});
 	self.importFileRepositoryFromServer = importFileRepositoryFromServer.bind({serverURL: serverURL});
