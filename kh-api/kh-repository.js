@@ -346,7 +346,7 @@ var saveFile =  function(filePath,fileContent,callback) {
  * @param URL - the knowhow URL we are attempting to load
  */
 var loadURL = function(URL, callback) {
-	repoName = job.jobRef.split('://')[0];
+	repoName = URL.split('://')[0];
 	loadRepoFromName(repoName, function(err, loadedRepo) {
 		if (err) {
 			callback(err);
