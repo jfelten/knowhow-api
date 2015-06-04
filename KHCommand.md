@@ -51,6 +51,21 @@
 ###saveFile: saves a file with content <content> at repository location <fileURL> on the knowhow server at <KHServerURL>
 		KHCommand saveFile <KHServerURL> <content>
 
+###loadURL: returns the content of any text file based on a knowhow url
+		KHCommand saveFile <KHServerURL> <a knowhow URL>
+
+###importFileRepositoryFromGit: imports a knowhow repository into a server based on a git URL
+		KHCommand importFileRepositoryFromGit <KHServerURL> <new repo json representation> <gitURL> <gitUser> <gitPassword>
+
+###importFileRepositoryFromServer: imports a knowhow repository into a server based on a git URL
+		KHCommand importFileRepositoryFromServer <KHServerURL> <new repo json representation> <KHHostRepoName> <serverHost> <port>
+
+###importFileRepositoryFromTarBall: imports a knowhow repository into a server from a .tar.gz archive
+		KHCommand importFileRepositoryFromTarBall <KHServerURL> <new repo json representation> <archive path>
+
+###downloadRepoAsTarBall: downloads a knowhow repository from a server and saves to path as .tar.gz archive
+		KHCommand downloadRepoAsTarBall <KHServerURL> <new repo json representation> <save path>
+
 ###executeJob: executes a job <repository URL or json> on a specified agent <Agent.json> through on the knowhow server at <KHServerURL>
 		KHCommand executeJob <KHServerURL> <agent.json> <job.json >
 
