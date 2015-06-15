@@ -9,6 +9,9 @@
 ###deleteAgent: deletes agent specified in <agent.json> from KH Server at <KHServerURL>
 		KHCommand deleteAgent <KHServerURL> <agent.json>
 
+###resetAgent: stops/restarts an agent specified in <agent.json> from KH Server at <KHServerURL>
+		KHCommand restAgent <KHServerURL> <agent.json>
+
 ###updateAgent: updates agent specified in <agent.json> from KH Server at <KHServerURL>
 		KHCommand updateAgent <KHServerURL> <agent.json>
 
@@ -74,4 +77,19 @@
 
 ###getRunningJobsList: gets a running list of jobs on the knowhow server at <KHServerURL>
 		KHCommand getRunningJobsList <KHServerURL>
+
+###loadAgentsForEnvironment: ensures all agents for environment are running on the knowhow server at <KHServerURL>
+		KHCommand loadAgentsForEnvironment <KHServerURL> <environment.json>
+
+###connectEnvironmentAgents: ensures all agents for environment are running on the knowhow server at <KHServerURL>
+		KHCommand connectEnvironmentAgents <KHServerURL> <environment.json>
+
+###executeWorkflow: executes a workflow against an environment on the knowhow server at <KHServerURL>
+		KHCommand executeWorkflow <KHServerURL> <environment.json>, <workflow.json>
+
+###cancelWorkflow: cancels the specified workflow running against environment on the knowhow server at <KHServerURL>
+		KHCommand ecancelWorkflow <KHServerURL> <environment.json>, <workflow.json>
+
+###getRunningWorksList: gets a running list of workflows on the knowhow server at <KHServerURL>
+		KHCommand getRunningWorkflowsList <KHServerURL>
 

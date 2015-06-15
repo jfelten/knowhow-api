@@ -17,6 +17,12 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#deleteAgentSync">deleteAgentSync(agentInfo)</a> ⇒</dt>
 <dd><p>deletes an agent on a knowhow server</p>
 </dd>
+<dt><a href="#resetAgent">resetAgent(agentInfo, callback)</a></dt>
+<dd><p>resets an agent on a knowhow server by stopping and restarting.</p>
+</dd>
+<dt><a href="#resetAgentSync">resetAgentSync(agentInfo)</a></dt>
+<dd><p>Synchronous version of addAgent call</p>
+</dd>
 <dt><a href="#getAgentInfo">getAgentInfo(agentInfo, callback)</a></dt>
 <dd><p>retrives agent info base on _id.</p>
 </dd>
@@ -86,6 +92,27 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#KHRepository">KHRepository(serverURL, EventHandler)</a></dt>
 <dd><p>Factory method for KHJob</p>
 </dd>
+<dt><a href="#loadAgentsForEnvironment">loadAgentsForEnvironment(environment)</a></dt>
+<dd><p>loads all agents on an environment.  Returns with the agent data fully populated</p>
+</dd>
+<dt><a href="#connectEnvironmentAgents">connectEnvironmentAgents(environment)</a></dt>
+<dd><p>Ensures that all agents for an environment are running.  IF a defined agent does not exist an attempt is made to add it.</p>
+</dd>
+<dt><a href="#executeWorkflow">executeWorkflow(environment, workflow, callback)</a></dt>
+<dd><p>Executes a workflow on a knowhow server</p>
+</dd>
+<dt><a href="#executeWorkflowSync">executeWorkflowSync(environment, workflow)</a></dt>
+<dd><p>Synchronous version of addWorkflow call</p>
+</dd>
+<dt><a href="#cancelWorkflow">cancelWorkflow(environment, workflow, callback)</a></dt>
+<dd><p>Cancels a running workflow on a knowhow server</p>
+</dd>
+<dt><a href="#getRunningWorkflowsList">getRunningWorkflowsList(callback)</a></dt>
+<dd><p>Retreives a list of currently executing workflows on a knowhow server</p>
+</dd>
+<dt><a href="#KHWorkflow">KHWorkflow(serverURL, khEventHandler, the, khClient)</a></dt>
+<dd><p>Factory method for KHWorkflow</p>
+</dd>
 </dl>
 ## Typedefs
 <dl>
@@ -148,6 +175,27 @@ deletes an agent on a knowhow server
 | Param | Description |
 | --- | --- |
 | agentInfo | agentInfo must specify _id - ex: \{"_id": "1234"\} |
+
+<a name="resetAgent"></a>
+## resetAgent(agentInfo, callback)
+resets an agent on a knowhow server by stopping and restarting.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| agentInfo | agentInfo only host is requred - ex: \{"host": "myHost", "port": 3141, "user": "MyUSer", "passwordEnc": "DSAF@#R##EASDSAS@#"\} |
+| callback | callback function with parameters (error, agentInfo) |
+
+<a name="resetAgentSync"></a>
+## resetAgentSync(agentInfo)
+Synchronous version of addAgent call
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| agentInfo | json representaion of the agent to add |
 
 <a name="getAgentInfo"></a>
 ## getAgentInfo(agentInfo, callback)
@@ -413,6 +461,84 @@ Factory method for KHJob
 | --- | --- |
 | serverURL | the url of the server |
 | EventHandler |  |
+
+<a name="loadAgentsForEnvironment"></a>
+## loadAgentsForEnvironment(environment)
+loads all agents on an environment.  Returns with the agent data fully populated
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | the environment to load |
+
+<a name="connectEnvironmentAgents"></a>
+## connectEnvironmentAgents(environment)
+Ensures that all agents for an environment are running.  IF a defined agent does not exist an attempt is made to add it.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | an environment json object |
+
+<a name="executeWorkflow"></a>
+## executeWorkflow(environment, workflow, callback)
+Executes a workflow on a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | json environment representation (i.e. collection of knowhow agents that represent the environment) |
+| workflow | a json workflow to execute |
+| callback | callback function with parameters (error, agentInfo) |
+
+<a name="executeWorkflowSync"></a>
+## executeWorkflowSync(environment, workflow)
+Synchronous version of addWorkflow call
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | json representaion of the workflow's environment |
+| workflow | to run |
+
+<a name="cancelWorkflow"></a>
+## cancelWorkflow(environment, workflow, callback)
+Cancels a running workflow on a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | environment to cancel |
+| workflow | a json workflow to execute |
+| callback | callback function with parameters (error, agentInfo) |
+
+<a name="getRunningWorkflowsList"></a>
+## getRunningWorkflowsList(callback)
+Retreives a list of currently executing workflows on a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| callback | callback function with parameters (error, runningJobList) |
+
+<a name="KHWorkflow"></a>
+## KHWorkflow(serverURL, khEventHandler, the, khClient)
+Factory method for KHWorkflow
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| serverURL | the url of the server |
+| khEventHandler | EventHandler |
+| the | khJob object for this workflow engine |
+| khClient |  |
 
 <a name="loadFile"></a>
 ## loadFile : <code>function</code>
