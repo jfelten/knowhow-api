@@ -35,6 +35,15 @@ var getCommandMap = function(khClient) {
 				return args;
 			} 
 		},
+		"resetAgent": {
+			"func": khClient.khAgent.resetAgent,
+			"usage": "KHCommand restAgent <KHServerURL> <agent.json>",
+			"description" : "stops/restarts an agent specified in <agent.json> from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
+		},
 		"updateAgent": {
 			"func": khClient.khAgent.updateAgent,
 			"usage": "KHCommand updateAgent <KHServerURL> <agent.json>",
@@ -189,6 +198,50 @@ var getCommandMap = function(khClient) {
 			"func": khClient.khJob.getRunningJobsList,
 			"usage": "KHCommand getRunningJobsList <KHServerURL>",
 			"description": "gets a running list of jobs on the knowhow server at <KHServerURL>"
+			
+		}, 
+		"loadAgentsForEnvironment" : {
+			"func": khClient.khWorkflow.loadAgentsForEnvironment,
+			"usage": "KHCommand loadAgentsForEnvironment <KHServerURL> <environment.json>",
+			"description": "ensures all agents for environment are running on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			}
+		},
+		"connectEnvironmentAgents" : {
+			"func": khClient.khWorkflow.connectEnvironmentAgents,
+			"usage": "KHCommand connectEnvironmentAgents <KHServerURL> <environment.json>",
+			"description": "ensures all agents for environment are running on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			}
+		},
+		"executeWorkflow" : {
+			"func": khClient.khWorkflow.executeWorkflow,
+			"usage": "KHCommand executeWorkflow <KHServerURL> <environment.json>, <workflow.json>",
+			"description": "executes a workflow against an environment on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				args[1] = JSON.parse(args[1]);
+				return args;
+			}
+		},
+		"cancelWorkflow" : {
+			"func": khClient.khWorkflow.cancelWorkflow,
+			"usage": "KHCommand ecancelWorkflow <KHServerURL> <environment.json>, <workflow.json>",
+			"description": "cancels the specified workflow running against environment on the knowhow server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				args[1] = JSON.parse(args[1]);
+				return args;
+			}
+		},
+		"getRunningWorksList" : {
+			"func": khClient.khWorkflow.getRunningWorkflowsList,
+			"usage": "KHCommand getRunningWorkflowsList <KHServerURL>",
+			"description": "gets a running list of workflows on the knowhow server at <KHServerURL>"
 			
 		}
 	}
