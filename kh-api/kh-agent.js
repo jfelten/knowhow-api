@@ -7,7 +7,7 @@ var agentAddQueue = {};
 
 
 function validateAgent(agentInfo) {
-	console.log("host="+agentInfo.host);
+	console.log(agentInfo);
 	if (agentInfo.login && !agentInfo.user) {
 		agentInfo.user = agentInfo.login;
 	}
@@ -86,7 +86,7 @@ var updateAgent = function(agentInfo, callback) {
 	            	callback(error);
 	            }
 	        } else {
-	        	callback();
+	        	if (callback) callback();
 	        }
 	    }
 	);
@@ -101,6 +101,7 @@ var updateAgent = function(agentInfo, callback) {
 var deleteAgent = function(agentInfo, callback) {
 	 //var id = agentInfo.user+"@"+agentInfo.host+":"+agentInfo.port;
 	 //agentDeleteQueue[id] = callback;
+	 console.log(agentInfo);
 	 request.post(this.serverURL+'/api/deleteAgent',{form: agentInfo},
 	    function (error, response, body) {
 	    	if (response) {
@@ -108,7 +109,7 @@ var deleteAgent = function(agentInfo, callback) {
 	    	}
 	        if (error || (response && response.statusCode != 200)) {
 	            if (!error) {
-        			callback(new Error("response: "+response.statusCode+" "+body)); 
+        			callback(new Error("response: "+response.statusCode+" "+body.message)); 
 	        	} else {
 	            	callback(error);
 	            }
@@ -141,6 +142,60 @@ deleteAgentSync = function(agentInfo) {
 			else return agent;
 		}
 	);
+}
+
+/**
+ * resets an agent on a knowhow server by stopping and restarting. 
+ * 
+ * @param agentInfo - agentInfo only host is requred - ex: \{"host": "myHost", "port": 3141, "user": "MyUSer", "passwordEnc": "DSAF@#R##EASDSAS@#"\}
+ * @param callback - callback function with parameters (error, agentInfo)
+ */
+var resetAgent = function(agentInfo, callback) {
+	if (!validateAgent(agentInfo)) {
+		callback(new Error("Invalid agent data"));
+		return;
+	}
+	 var id = agentInfo.user+"@"+agentInfo.host+":"+agentInfo.port;
+	 agentAddQueue[id] = callback;
+	 request({ method: 'POST'
+	    , uri: this.serverURL+'/api/resetAgent'
+	    , body: agentInfo
+	    , json: true
+    }, function (error, response, body) {
+	        if (error || (response && response.statusCode != 200)) {
+	            if (!error) {
+        			callback(new Error("response: "+response.statusCode+" "+body.message)); 
+	        	} else {
+	            	callback(error);
+	            }
+	            delete agentAddQueue[id];
+	        } else {
+		        //callback(undefined, body);
+	        	
+	        }
+	    }
+	);
+
+};
+
+/**
+ * Synchronous version of addAgent call
+ *
+ * @param agentInfo json representaion of the agent to add
+ */
+var resetAgentSync = function(agentInfo) {
+	async.series([
+	    function(callback){
+	        resetAgent.bind({serverURL: this.serverURL})(agentInfo, callback);
+	    }
+		],
+	
+		function(err,agent) {
+			if (err) {
+				return undefined;
+			}
+			else return agent;
+	});
 }
 
 /**
@@ -229,9 +284,13 @@ function KHAgent(serverURL,khEventHandler) {
 	});
 	self.khEventHandler.on('agent-error', function(agent) {
 		var id = agent.user+"@"+agent.host+":"+agent.port;
-		console.log('agent error: '+id+" "+agent.message);
+		var errorMessage = "agent error: "+id;
+		if (agent.message) {
+			errorMessage = errorMessage+" "+agent.message;
+		}
+		console.log(errorMessage);
 		if (agentAddQueue[id]) {
-			agentAddQueue[id](new Error(agent.message));
+			agentAddQueue[id](new Error(errorMessage));
 			delete agentAddQueue[id];
 		}
 
@@ -249,6 +308,8 @@ function KHAgent(serverURL,khEventHandler) {
 	self.addAgentSync = addAgentSync.bind({serverURL: serverURL});
 	self.deleteAgent = deleteAgent.bind({serverURL: serverURL});
 	self.deleteAgentSync = deleteAgentSync.bind({serverURL: serverURL});
+	self.resetAgent = resetAgent.bind({serverURL: serverURL});
+	self.resetAgentSync = resetAgentSync.bind({serverURL: serverURL});
 	self.updateAgent = updateAgent.bind({serverURL: serverURL});
 	self.getAgentLogs = getAgentLogs.bind({serverURL: serverURL});
 	self.getAgentList = getAgentList.bind({serverURL: serverURL});
@@ -262,6 +323,8 @@ KHAgent.prototype.addAgent = addAgent;
 KHAgent.prototype.addAgentSync = addAgentSync;
 KHAgent.prototype.deleteAgent = deleteAgent;
 KHAgent.prototype.deleteAgentSync = deleteAgentSync;
+KHAgent.prototype.resetAgent = resetAgent;
+KHAgent.prototype.resetAgentSync = resetAgentSync;
 KHAgent.prototype.updateAgent = updateAgent;
 KHAgent.prototype.getAgentInfo = getAgentInfo;
 

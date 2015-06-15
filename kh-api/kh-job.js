@@ -172,17 +172,21 @@ var cancelJob = function(agent, job) {
 	    , json: true
      }, function (error, response, body) {
 	        if (error || response.statusCode != 200) {
-	            if (!error) {
-        			callback(new Error("response: "+response.statusCode+" "+body)); 
-	        	} else {
-	            	callback(error);
-	            }
+	        	if (callback) {
+		            if (!error) {
+	        			callback(new Error("response: "+response.statusCode+" "+body)); 
+		        	} else {
+		            	callback(error);
+		            }
+		         }
 	        } else {
 	         	var jsonObject = JSON.parse(body);
 	        	if (jsonObject == undefined) {
 	        	  	jsonObject = {};
 	        	}
-	        	callback(undefined, jsonObject);
+	        	if (callback) {
+	        		callback(undefined, jsonObject);
+	        	}
 	        }
 	    }
 	);

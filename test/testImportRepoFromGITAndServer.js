@@ -1,7 +1,7 @@
 var testServerPort = 3003;
 var exampleRepo = {
-	"name": "knowhow_example",
-	"path": "/tmp/knowhow_example"
+	"name": "knowhow-example",
+	"path": "/tmp/knowhow-example"
 };
 
 var exampleRepo2 = {
