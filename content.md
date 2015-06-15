@@ -1,4 +1,4 @@
-#knowhow-api [![Build Status](https://travis-ci.org/jfelten/knowhow-api.svg?branch=master)](https://travis-ci.org/jfelten/knowhow-api)
+# knowhow-api [![Build Status](https://travis-ci.org/jfelten/knowhow-api.svg?branch=master)](https://travis-ci.org/jfelten/knowhow-api)
 
 This is a node.js api for connect and manipulating a knowhow server.  A command line tool that exposes the API to bash, KHCommand, is also provided for shell scripting.  Uses of this API include:
 
@@ -8,7 +8,7 @@ This is a node.js api for connect and manipulating a knowhow server.  A command 
 * executing jobs
 * executing other knowhow jobs from knowhow itself
 
-#Installation
+# Installation
 
 This is installed by default when installing knowhow package.  If you want to install this package individually
 
@@ -16,7 +16,7 @@ This is installed by default when installing knowhow package.  If you want to in
 		
 #Examples
 
-###List all active repositories on a knowhow server
+### List all active repositories on a knowhow server
 
 		var serverURL = "http://localhost:3001";
 		var khClient =  require('knowhow-api')(serverURL);
@@ -34,7 +34,7 @@ or using KHCommand
 
 		KHCommand listRepositories http://localhost:3001
 		 
-##Execute a job on a knowhow server
+## Execute a job on a knowhow server
 
 		var serverURL = "http://localhost:3001";
 		var khClient =  require('knowhow-api')(serverURL);
@@ -47,7 +47,7 @@ or using KHCommand
 		
 		KHCommand executeJob http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}' '{"jobRef": "zenzic:///jobs/dummyJob.json"}'
 
-##Add/delete an agent
+## Add/delete an agent
 
 		var serverURL = "http://localhost:3001";
 		var khClient =  require('knowhow-api')(serverURL);
