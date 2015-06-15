@@ -119,11 +119,11 @@ or using KHCommand:
 		});
 
 
-##other examples:
+## other examples:
 
 add a file to a repository, create a new repository, delete a repository, delete a file in a repository
 
-###knowhow urls
+### knowhow urls
 
 All files and resources on a knowhow server are designed to be accessed in url syntax:
 
@@ -132,7 +132,7 @@ All files and resources on a knowhow server are designed to be accessed in url s
 For example: MyRepo:///jobs/myJob.json would refer to the file myJob.json located in the jobs folder of the MyRepo repositorhy
 
 
-###Events
+### Events
 
 An event listener is provided to listen for the following server side events:
 
@@ -146,8 +146,10 @@ An event listener is provided to listen for the following server side events:
 * 'job-complete'
 * 'job-error'
 * 'cancel-job-on-agent'
+* 'execution-start'
 * 'execution-complete'
 * 'execution-error'
+* 'execution-password-prompt'
 	
 Example:
 		var serverURL = "http://localhost:3001";
@@ -157,4 +159,4 @@ Example:
 		});
 
 
-#API
+# API

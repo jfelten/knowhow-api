@@ -1,8 +1,19 @@
 #include "content.md"
 
-#include "api-package.md"
+## Agent API
+#include "api-agent.md"
 
-#include "KHCommand.md"
+## Repository API
+#include "api-repository.md"
 
-##commits since last release
+## Job API
+#include "api-job.md"
+
+## Workflow API
+#include "api-workflow.md"
+
+## Event API
+#include "api-event.md"
+
+## commits since last release
 #include "git_commit.md"
