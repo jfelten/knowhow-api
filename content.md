@@ -49,31 +49,79 @@ or using KHCommand
 
 ##Add/delete an agent
 
-	var serverURL = "http://localhost:3001";
-	var khClient =  require('knowhow-api')(serverURL);
-	var agentInfo = {
-			"host": "myHost",
-			"user": "myUser",
-			"password": "myPassword",
-			"port": 3141
-		};
-	
-	//add agent
-	khClient.khAgent.addAgent(agentInfo, function(err, addedAgent) {
-	
-	});
-	
-	//delete agent
-	khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
-	
-	});
+		var serverURL = "http://localhost:3001";
+		var khClient =  require('knowhow-api')(serverURL);
+		var agentInfo = {
+				"host": "myHost",
+				"user": "myUser",
+				"password": "myPassword",
+				"port": 3141
+			};
+		
+		//add agent
+		khClient.khAgent.addAgent(agentInfo, function(err, addedAgent) {
+		
+		});
+		
+		//delete agent
+		khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
+		
+		});
 	
 or using KHCommand:
 	KHCommand.sh addAgent http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}'
 
+## Import a repository from GIT
+
+		var exampleRepo = {
+			"name": "knowhow-example",
+			"path": "/tmp/knowhow-example"
+		};
+		var gitURL = "https://github.com/jfelten/knowhow_example_repo.git";
+		var gitUser = undefined;
+		var gitPassword = undefined;
+		khClient.khRepository.importFileRepositoryFromGit(exampleRepo, gitURL, gitUser, gitPassword, function(err, loadedRepo) {
+		});
+	
+## Download a repository as a tarball
+
+		khClient.khRepository.downloadRepoAsTarBall(exampleRepo, './testRepo.tar.gz', function(err, savedPath) {
+		});
+	
+## Execute a workflow
+
+		khClient.khRepository.loadURL("knowhow-example:///environments/test/environment.json", function(err, testEnvironment) {
+			if (err) {
+				console.log(err.stack);
+				return;
+				throw err;
+				prcoess.exit(1);
+			}
+			//connect all the agents for the environment
+			khClient.khWorkflow.connectEnvironmentAgents(testEnvironment, function(err) {
+			
+				if (err) {
+					throw err;
+					prcoess.exit(1);
+				}
+				//load a test workflow and execute it
+				khClient.khRepository.loadURL("knowhow-example:///workflows/test/testWorkflow.json", function(err, testWorkflow){
+					if (err) {
+						throw err;
+						prcoess.exit(1);
+					}
+					khClient.khWorkflow.executeWorkflow(testEnvironment, testWorkflow,function(err, workflowREsult) {
+						process.exit(0);
+					});
+					
+				});
+			});
+		});
+
+
 ##other examples:
 
-add a file to a repository, create a new repository, delete a repository, delete a file in a repository, add an agent, delete and agent, execute a workflow
+add a file to a repository, create a new repository, delete a repository, delete a file in a repository
 
 ###knowhow urls
 
