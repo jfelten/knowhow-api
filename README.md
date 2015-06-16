@@ -49,31 +49,79 @@ or using KHCommand
 
 ##Add/delete an agent
 
-	var serverURL = "http://localhost:3001";
-	var khClient =  require('knowhow-api')(serverURL);
-	var agentInfo = {
-			"host": "myHost",
-			"user": "myUser",
-			"password": "myPassword",
-			"port": 3141
-		};
-	
-	//add agent
-	khClient.khAgent.addAgent(agentInfo, function(err, addedAgent) {
-	
-	});
-	
-	//delete agent
-	khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
-	
-	});
+		var serverURL = "http://localhost:3001";
+		var khClient =  require('knowhow-api')(serverURL);
+		var agentInfo = {
+				"host": "myHost",
+				"user": "myUser",
+				"password": "myPassword",
+				"port": 3141
+			};
+		
+		//add agent
+		khClient.khAgent.addAgent(agentInfo, function(err, addedAgent) {
+		
+		});
+		
+		//delete agent
+		khClient.khAgent.deleteAgent(agentInfo, function(err, deletedAgent) {
+		
+		});
 	
 or using KHCommand:
 	KHCommand.sh addAgent http://localhost:3001 '{"host": "container02", "user": "serverClub", "password": "serverClub", "port": 3141}'
 
+## Import a repository from GIT
+
+		var exampleRepo = {
+			"name": "knowhow-example",
+			"path": "/tmp/knowhow-example"
+		};
+		var gitURL = "https://github.com/jfelten/knowhow_example_repo.git";
+		var gitUser = undefined;
+		var gitPassword = undefined;
+		khClient.khRepository.importFileRepositoryFromGit(exampleRepo, gitURL, gitUser, gitPassword, function(err, loadedRepo) {
+		});
+	
+## Download a repository as a tarball
+
+		khClient.khRepository.downloadRepoAsTarBall(exampleRepo, './testRepo.tar.gz', function(err, savedPath) {
+		});
+	
+## Execute a workflow
+
+		khClient.khRepository.loadURL("knowhow-example:///environments/test/environment.json", function(err, testEnvironment) {
+			if (err) {
+				console.log(err.stack);
+				return;
+				throw err;
+				prcoess.exit(1);
+			}
+			//connect all the agents for the environment
+			khClient.khWorkflow.connectEnvironmentAgents(testEnvironment, function(err) {
+			
+				if (err) {
+					throw err;
+					prcoess.exit(1);
+				}
+				//load a test workflow and execute it
+				khClient.khRepository.loadURL("knowhow-example:///workflows/test/testWorkflow.json", function(err, testWorkflow){
+					if (err) {
+						throw err;
+						prcoess.exit(1);
+					}
+					khClient.khWorkflow.executeWorkflow(testEnvironment, testWorkflow,function(err, workflowREsult) {
+						process.exit(0);
+					});
+					
+				});
+			});
+		});
+
+
 ##other examples:
 
-add a file to a repository, create a new repository, delete a repository, delete a file in a repository, add an agent, delete and agent, execute a workflow
+add a file to a repository, create a new repository, delete a repository, delete a file in a repository
 
 ###knowhow urls
 
@@ -129,6 +177,12 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 </dd>
 <dt><a href="#deleteAgentSync">deleteAgentSync(agentInfo)</a> ⇒</dt>
 <dd><p>deletes an agent on a knowhow server</p>
+</dd>
+<dt><a href="#resetAgent">resetAgent(agentInfo, callback)</a></dt>
+<dd><p>resets an agent on a knowhow server by stopping and restarting.</p>
+</dd>
+<dt><a href="#resetAgentSync">resetAgentSync(agentInfo)</a></dt>
+<dd><p>Synchronous version of addAgent call</p>
 </dd>
 <dt><a href="#getAgentInfo">getAgentInfo(agentInfo, callback)</a></dt>
 <dd><p>retrives agent info base on _id.</p>
@@ -199,6 +253,27 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#KHRepository">KHRepository(serverURL, EventHandler)</a></dt>
 <dd><p>Factory method for KHJob</p>
 </dd>
+<dt><a href="#loadAgentsForEnvironment">loadAgentsForEnvironment(environment)</a></dt>
+<dd><p>loads all agents on an environment.  Returns with the agent data fully populated</p>
+</dd>
+<dt><a href="#connectEnvironmentAgents">connectEnvironmentAgents(environment)</a></dt>
+<dd><p>Ensures that all agents for an environment are running.  IF a defined agent does not exist an attempt is made to add it.</p>
+</dd>
+<dt><a href="#executeWorkflow">executeWorkflow(environment, workflow, callback)</a></dt>
+<dd><p>Executes a workflow on a knowhow server</p>
+</dd>
+<dt><a href="#executeWorkflowSync">executeWorkflowSync(environment, workflow)</a></dt>
+<dd><p>Synchronous version of addWorkflow call</p>
+</dd>
+<dt><a href="#cancelWorkflow">cancelWorkflow(environment, workflow, callback)</a></dt>
+<dd><p>Cancels a running workflow on a knowhow server</p>
+</dd>
+<dt><a href="#getRunningWorkflowsList">getRunningWorkflowsList(callback)</a></dt>
+<dd><p>Retreives a list of currently executing workflows on a knowhow server</p>
+</dd>
+<dt><a href="#KHWorkflow">KHWorkflow(serverURL, khEventHandler, the, khClient)</a></dt>
+<dd><p>Factory method for KHWorkflow</p>
+</dd>
 </dl>
 ## Typedefs
 <dl>
@@ -261,6 +336,27 @@ deletes an agent on a knowhow server
 | Param | Description |
 | --- | --- |
 | agentInfo | agentInfo must specify _id - ex: \{"_id": "1234"\} |
+
+<a name="resetAgent"></a>
+## resetAgent(agentInfo, callback)
+resets an agent on a knowhow server by stopping and restarting.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| agentInfo | agentInfo only host is requred - ex: \{"host": "myHost", "port": 3141, "user": "MyUSer", "passwordEnc": "DSAF@#R##EASDSAS@#"\} |
+| callback | callback function with parameters (error, agentInfo) |
+
+<a name="resetAgentSync"></a>
+## resetAgentSync(agentInfo)
+Synchronous version of addAgent call
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| agentInfo | json representaion of the agent to add |
 
 <a name="getAgentInfo"></a>
 ## getAgentInfo(agentInfo, callback)
@@ -527,6 +623,84 @@ Factory method for KHJob
 | serverURL | the url of the server |
 | EventHandler |  |
 
+<a name="loadAgentsForEnvironment"></a>
+## loadAgentsForEnvironment(environment)
+loads all agents on an environment.  Returns with the agent data fully populated
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | the environment to load |
+
+<a name="connectEnvironmentAgents"></a>
+## connectEnvironmentAgents(environment)
+Ensures that all agents for an environment are running.  IF a defined agent does not exist an attempt is made to add it.
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | an environment json object |
+
+<a name="executeWorkflow"></a>
+## executeWorkflow(environment, workflow, callback)
+Executes a workflow on a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | json environment representation (i.e. collection of knowhow agents that represent the environment) |
+| workflow | a json workflow to execute |
+| callback | callback function with parameters (error, agentInfo) |
+
+<a name="executeWorkflowSync"></a>
+## executeWorkflowSync(environment, workflow)
+Synchronous version of addWorkflow call
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | json representaion of the workflow's environment |
+| workflow | to run |
+
+<a name="cancelWorkflow"></a>
+## cancelWorkflow(environment, workflow, callback)
+Cancels a running workflow on a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| environment | environment to cancel |
+| workflow | a json workflow to execute |
+| callback | callback function with parameters (error, agentInfo) |
+
+<a name="getRunningWorkflowsList"></a>
+## getRunningWorkflowsList(callback)
+Retreives a list of currently executing workflows on a knowhow server
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| callback | callback function with parameters (error, runningJobList) |
+
+<a name="KHWorkflow"></a>
+## KHWorkflow(serverURL, khEventHandler, the, khClient)
+Factory method for KHWorkflow
+
+**Kind**: global function  
+
+| Param | Description |
+| --- | --- |
+| serverURL | the url of the server |
+| khEventHandler | EventHandler |
+| the | khJob object for this workflow engine |
+| khClient |  |
+
 <a name="loadFile"></a>
 ## loadFile : <code>function</code>
 Loads a File from the specified repository
@@ -551,6 +725,9 @@ Loads a File from the specified repository
 
 ###deleteAgent: deletes agent specified in <agent.json> from KH Server at <KHServerURL>
 		KHCommand deleteAgent <KHServerURL> <agent.json>
+
+###resetAgent: stops/restarts an agent specified in <agent.json> from KH Server at <KHServerURL>
+		KHCommand restAgent <KHServerURL> <agent.json>
 
 ###updateAgent: updates agent specified in <agent.json> from KH Server at <KHServerURL>
 		KHCommand updateAgent <KHServerURL> <agent.json>
@@ -618,10 +795,33 @@ Loads a File from the specified repository
 ###getRunningJobsList: gets a running list of jobs on the knowhow server at <KHServerURL>
 		KHCommand getRunningJobsList <KHServerURL>
 
+###loadAgentsForEnvironment: ensures all agents for environment are running on the knowhow server at <KHServerURL>
+		KHCommand loadAgentsForEnvironment <KHServerURL> <environment.json>
+
+###connectEnvironmentAgents: ensures all agents for environment are running on the knowhow server at <KHServerURL>
+		KHCommand connectEnvironmentAgents <KHServerURL> <environment.json>
+
+###executeWorkflow: executes a workflow against an environment on the knowhow server at <KHServerURL>
+		KHCommand executeWorkflow <KHServerURL> <environment.json>, <workflow.json>
+
+###cancelWorkflow: cancels the specified workflow running against environment on the knowhow server at <KHServerURL>
+		KHCommand ecancelWorkflow <KHServerURL> <environment.json>, <workflow.json>
+
+###getRunningWorksList: gets a running list of workflows on the knowhow server at <KHServerURL>
+		KHCommand getRunningWorkflowsList <KHServerURL>
+
 
 
 ##commits since last release
-		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+		added new examples
+ 		Completed workflow API, Added additona tests, fix agent api runtime errors
+ 		added workflow commands
+ 		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		fix load URL call
+ 		fix typo
+ 		0.0.16
+ 		updated documentation
+ 		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
  		add latest repository functions to KHCommand
  		added repository page functions to API as well as eom real unit tests
  		0.0.15
