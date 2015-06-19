@@ -32,6 +32,12 @@ is discouraged.  Use passowrddEnc to pass encrypted passwords that are descryped
 <dt><a href="#getAgentList">getAgentList(callback)</a></dt>
 <dd><p>retrieves a list of all agents on a knowhow server</p>
 </dd>
+<dt><a href="#agentHeartbeat">agentHeartbeat(agent, callback)</a> ⇒</dt>
+<dd><p>Checks if an agent is alive by attempting to contact it through the server.</p>
+</dd>
+<dt><a href="#waitForAgentStartup">waitForAgentStartup(agent, callback)</a> ⇒</dt>
+<dd><p>Waits for an agent to start up and returns when done.  Used for flow control in scripts.</p>
+</dd>
 </dl>
 <a name="addAgent"></a>
 ## addAgent(agentInfo, callback)
@@ -141,4 +147,28 @@ retrieves a list of all agents on a knowhow server
 | Param | Description |
 | --- | --- |
 | callback | callback function with parameters (error, agentInfo) |
+
+<a name="agentHeartbeat"></a>
+## agentHeartbeat(agent, callback) ⇒
+Checks if an agent is alive by attempting to contact it through the server.
+
+**Kind**: global function  
+**Returns**: \{alive: true\} if the agent can be reached.  
+
+| Param | Description |
+| --- | --- |
+| agent | agent json |
+| callback |  |
+
+<a name="waitForAgentStartup"></a>
+## waitForAgentStartup(agent, callback) ⇒
+Waits for an agent to start up and returns when done.  Used for flow control in scripts.
+
+**Kind**: global function  
+**Returns**: \{alive: true\} if the agent can be reached.  
+
+| Param | Description |
+| --- | --- |
+| agent | agent json |
+| callback |  |
 
