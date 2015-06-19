@@ -14,7 +14,7 @@ This is installed by default when installing knowhow package.  If you want to in
 
 		npm install -g knowhow-api
 		
-#Examples
+# Examples
 
 ### List all active repositories on a knowhow server
 
@@ -740,7 +740,11 @@ Factory method for KHWorkflow
 
 
 ## commits since last release
-		Update aPI tempalte
+		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		0.0.18
+ 		updated documentation
+ 		added space to render properly on github
+ 		Update aPI tempalte
  		updated documentation to fix npm formatting issues and to break up apis into separate sections
  		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
  		0.0.17
