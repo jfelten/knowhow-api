@@ -273,7 +273,7 @@ var getAgentList = function(callback) {
  * @param agent - agent json
  * @param callback
  *
- * @ return "{alive: true}" if the agent can be reached.
+ * @returns \{alive: true\} if the agent can be reached.
  */
 var agentHeartbeat = function(agent, callback) {
 
@@ -302,7 +302,7 @@ var agentHeartbeat = function(agent, callback) {
  * @param agent - agent json
  * @param callback
  *
- * @returns {alive: true} if the agent can be reached.
+ * @returns \{alive: true\} if the agent can be reached.
  */
 var waitForAgentStartup = function(agent, callback) {
 
