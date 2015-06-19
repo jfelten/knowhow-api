@@ -126,7 +126,7 @@ var deleteAgent = function(agentInfo, callback) {
  * deletes an agent on a knowhow server
  * 
  * @param agentInfo - agentInfo must specify _id - ex: \{"_id": "1234"\}
- * @return agent or undefined if it didn't work
+ * @returns agent or undefined if it didn't work
  */
 deleteAgentSync = function(agentInfo) {
 	async.series([
@@ -302,7 +302,7 @@ var agentHeartbeat = function(agent, callback) {
  * @param agent - agent json
  * @param callback
  *
- * @return "{alive: true}" if the agent can be reached.
+ * @returns {alive: true} if the agent can be reached.
  */
 var waitForAgentStartup = function(agent, callback) {
 
