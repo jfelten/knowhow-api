@@ -22,6 +22,7 @@ var getCommandMap = function(khClient) {
 			"usage": "KHCommand addAgent <KHServerURL> <agent.json>",
 			"description" : "adds agent specified in <agent.json> from KH Server at <KHServerURL>",
 			"processArgs": function (args) {
+				console.log(args[0]);
 				args[0] = JSON.parse(args[0]);
 				return args;
 			} 
@@ -243,6 +244,34 @@ var getCommandMap = function(khClient) {
 			"usage": "KHCommand getRunningWorkflowsList <KHServerURL>",
 			"description": "gets a running list of workflows on the knowhow server at <KHServerURL>"
 			
+		},
+		"agentHeartbeat": {
+			"func": khClient.khAgent.agentHeartbeat,
+			"usage": "KHCommand agentHeartbeat <KHServerURL> <agent.json>",
+			"description": "checks if agent specified in <agent.json> can be reached from KH Server at <KHServerURL>",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
+		},
+		"waitForAgentStartup": {
+			"func": khClient.khAgent.waitForAgentStartup,
+			"usage": "KHCommand waitForAgentStartup <KHServerURL> <agent.json>",
+			"description": "waits for agent specified in <agent.json> onKH Server at <KHServerURL> to start.  Useful script flow control.",
+			"processArgs": function (args) {
+				args[0] = JSON.parse(args[0]);
+				return args;
+			} 
+		},
+		"serverHeartbeat": {
+			"func": khClient.serverHeartbeat,
+			"usage": "KHCommand serverHeartbeat <KHServerURL>",
+			"description": "checks if KH Server at <KHServerURL> is alive"
+		},
+		"waitForServerStartup": {
+			"func": khClient.waitForServerStartup,
+			"usage": "KHCommand waitForServerStartup <KHServerURL>",
+			"description": "waits until <KHServerURL> registers a heartbeat"
 		}
 	}
 	return commandMap;
@@ -274,7 +303,7 @@ var execute = function(command, serverURL, arguments) {
 		console.error("expecting: "+cmd.func.length-1);
 		improperUsage(cmd);
 		khClient.end();
-		process.exit(code=0);
+		process.exit(code=1);
 	} else {
 		if (cmd.processArgs) {
 			arguments = cmd.processArgs(arguments);
