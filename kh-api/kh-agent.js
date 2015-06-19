@@ -267,6 +267,64 @@ var getAgentList = function(callback) {
 	);
 }
 
+/**
+ * Checks if an agent is alive by attempting to contact it through the server.
+ *
+ * @param agent - agent json
+ * @param callback
+ *
+ * @ return "{alive: true}" if the agent can be reached.
+ */
+var agentHeartbeat = function(agent, callback) {
+
+	var data = {
+	    	agent: agent,
+	    };
+	request.post(this.serverURL+'/api/agentHeartbeat',{form: data},
+	    function (error, response, body) {
+	        if (error || response.statusCode != 200) {
+	            if (!error) {
+        			callback(new Error("response: "+response.statusCode+" "+body)); 
+	        	} else {
+	            	callback(error);
+	            }
+	        } else {
+	        	callback();
+	        }
+	    }
+	);
+
+}
+
+/**
+ * Waits for an agent to start up and returns when done.  Used for flow control in scripts.
+ *
+ * @param agent - agent json
+ * @param callback
+ *
+ * @ return "{alive: true}" if the agent can be reached.
+ */
+var waitForAgentStartup = function(agent, callback) {
+
+	var data = {
+	    	agent: agent,
+	    };
+	request.post(this.serverURL+'/api/waitForAgentStartup',{form: data},
+	    function (error, response, body) {
+	        if (error || response.statusCode != 200) {
+	            if (!error) {
+        			callback(new Error("response: "+response.statusCode+" "+body)); 
+	        	} else {
+	            	callback(error);
+	            }
+	        } else {
+	        	callback();
+	        }
+	    }
+	);
+
+}
+
 function KHAgent(serverURL,khEventHandler) {
 	var self = this;
 	self.serverURL = serverURL;
@@ -314,7 +372,8 @@ function KHAgent(serverURL,khEventHandler) {
 	self.getAgentLogs = getAgentLogs.bind({serverURL: serverURL});
 	self.getAgentList = getAgentList.bind({serverURL: serverURL});
 	self.getAgentInfo = getAgentInfo.bind({serverURL: serverURL});
-	
+	self.agentHeartbeat = agentHeartbeat.bind({serverURL: serverURL});
+	self.waitForAgentStartup = waitForAgentStartup.bind({serverURL: serverURL});
 	return self;
 }
 
@@ -327,6 +386,8 @@ KHAgent.prototype.resetAgent = resetAgent;
 KHAgent.prototype.resetAgentSync = resetAgentSync;
 KHAgent.prototype.updateAgent = updateAgent;
 KHAgent.prototype.getAgentInfo = getAgentInfo;
+KHAgent.prototype.agentHeartbeat = agentHeartbeat;
+KHAgent.prototype.waitForAgentStartup = waitForAgentStartup;
 
 /*
 exports.addAgent = addAgent;
