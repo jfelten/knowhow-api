@@ -170,7 +170,7 @@ var resetAgent = function(agentInfo, callback) {
 	            }
 	            delete agentAddQueue[id];
 	        } else {
-		        //callback(undefined, body);
+		        callback(undefined, body);
 	        	
 	        }
 	    }

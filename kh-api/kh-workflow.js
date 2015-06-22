@@ -128,6 +128,7 @@ var executeOnServer = function(serverURL, environment, workflow, callback) {
 		workflowQueue[environment._id] = {};
 	}
 	workflowQueue[environment._id][workflow.id] = callback;
+	console.log(workflowQueue[environment._id]);
 	var data = {
 	    	environment: environment,
 	    	workflow: workflow
@@ -226,28 +227,27 @@ function KHWorkflow(serverURL, khEventHandler, khClient){
 	self.khEventHandler = khEventHandler;
 	self.khClient = khClient;
 	self.khJob = khJob;
-	self.khEventHandler.on("workflow-complete", function(completedAgent, completedJob) {
-		
-		console.log(completedJob.id+" done on environment: "+agentToString(completedAgent));
-		console.log(jobQueue);
-		if (jobQueue[completedAgent._id] && jobQueue[completedAgent._id][completedJob.id]) {
-			jobQueue[completedAgent._id][completedJob.id](undefined,completedJob);
-			delete jobQueue[completedAgent._id][completedJob.id];
+	self.khEventHandler.on("workflow-complete", function(completedEnvironment, completedJob) {
+		console.log(workflowQueue);
+		console.log(completedWorkflow.id+" done on environment: "+agentToString(completedEnvironment));
+		if (workflowQueue[completedEnvironment._id] && workflowQueue[completedEnvironment._id][completedWorkflow.id]) {
+			workflowQueue[completedEnvironment._id][completedWorkflow.id](undefined,completedWorkflow);
+			delete workflowQueue[completedEnvironment._id][completedWorkflow.id];
 		}
 	});
-	self.khEventHandler.on("workflow-error", function(errorAgent, errorJob) {
-		console.log(errorJob.id +"error on "+agentToString(errorAgent));
-		console.error(errorJob.message);
-		if (jobQueue[errorAgent._id] && jobQueue[errorAgent._id][errorJob.id]) {
-			jobQueue[errorAgent._id][errorJob.id](new Error(errorJob.id +"job error on "+agentToString(errorAgent)));
-			delete jobQueue[errorAgent._id][errorJob.id];
+	self.khEventHandler.on("workflow-error", function(errorEnvironment, errorWorkflow) {
+		console.log(errorWorkflow.id +"error on "+agentToString(errorEnvironment));
+		console.error(errorWorkflow.message);
+		if (workflowQueue[errorEnvironment._id] && workflowQueue[errorEnvironment._id][errorWorkflow.id]) {
+			workflowQueue[errorEnvironment._id][errorWorkflow.id](new Error(errorWorkflow.id +"job error on "+agentToString(errorEnvironment)));
+			delete workflowQueue[errorEnvironment._id][errorWorkflow.id];
 		}
 	});
-	self.khEventHandler.on("workflow-cancel", function(cancelAgent, cancelJob) {
-		console.log(cancelJob.id +"cancelled on "+agentToString(cancelAgent));
-		if (jobQueue[cancelAgent._id] && jobQueue[cancelAgent._id][cancelJob.id]) {
-			jobQueue[cancelAgent._id][cancelJob.id](new Error(cancelJob.id +"job error on "+agentToString(cancelAgent)));
-			delete jobQueue[cancelAgent._id][cancelJob.id];
+	self.khEventHandler.on("workflow-cancel", function(cancelEnvironment, cancelWorkflow) {
+		console.log(cancelWorkflow.id +"cancelled on "+agentToString(cancelEnvironment));
+		if (workflowQueue[cancelEnvironment._id] && workflowQueue[cancelEnvironment._id][cancelWorkflow.id]) {
+			workflowQueue[cancelEnvironment._id][cancelWorkflow.id](new Error(cancelWorkflow.id +"job error on "+agentToString(cancelEnvironment)));
+			delete workflowQueue[cancelEnvironment._id][cancelWorkflow.id];
 		}
 	});
 	

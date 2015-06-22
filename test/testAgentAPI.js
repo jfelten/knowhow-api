@@ -1,8 +1,7 @@
 var testServerPort = 3005;
 
 var testAgent = {
-	user: "testUser",
-	user: "testPassword",
+	user: "xxxx",
 	host: "localhost",
 	port: 5141
 
@@ -29,7 +28,7 @@ require('../../knowhow-server/server.js')(testServerPort, function(err) {
 				if (err) {
 					throw err;
 				}
-				//process.exit(0);
+				process.exit(0);
 			});
 		});
 	});

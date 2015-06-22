@@ -36,7 +36,7 @@ knowhowShell.executeSingleCommand("../bin/KHCommand.sh waitForServerStartup "+se
 					console.error(result);
 					process.exit(1);
 				}
-				console.log("server is alive: "+result.output);
+				console.log("agent added: "+result.output);
 				knowhowShell.executeSingleCommand("../bin/KHCommand.sh agentHeartbeat "+serverURL+" \""+testAgent+"\"", function(err, result) {
 					
 					if(err) {
@@ -45,8 +45,15 @@ knowhowShell.executeSingleCommand("../bin/KHCommand.sh waitForServerStartup "+se
 								throw err;
 								process.exit(1);
 							}
-							console.log("test complete");
-							process.exit(0);
+							knowhowShell.executeSingleCommand("../bin/KHCommand.sh resetAgent "+serverURL+" \""+testAgent+"\"", function(err, result) {
+								if(err) {
+									throw err;
+									//process.exit(1);
+								} else {
+									console.log("test complete");
+									process.exit(0);
+								}
+							});
 						});
 					}
 					else {
