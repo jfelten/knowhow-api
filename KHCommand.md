@@ -93,3 +93,15 @@
 ###getRunningWorksList: gets a running list of workflows on the knowhow server at <KHServerURL>
 		KHCommand getRunningWorkflowsList <KHServerURL>
 
+###agentHeartbeat: checks if agent specified in <agent.json> can be reached from KH Server at <KHServerURL>
+		KHCommand agentHeartbeat <KHServerURL> <agent.json>
+
+###waitForAgentStartup: waits for agent specified in <agent.json> onKH Server at <KHServerURL> to start.  Useful script flow control.
+		KHCommand waitForAgentStartup <KHServerURL> <agent.json>
+
+###serverHeartbeat: checks if KH Server at <KHServerURL> is alive
+		KHCommand serverHeartbeat <KHServerURL>
+
+###waitForServerStartup: waits until <KHServerURL> registers a heartbeat
+		KHCommand waitForServerStartup <KHServerURL>
+
