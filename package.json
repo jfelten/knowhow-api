@@ -1,6 +1,6 @@
 {
   "name": "knowhow-api",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "api that exposes knowhow-server and knowhow-agent services.  Provides a command line tool.",
   "main": "kh-api/index.js",
   "scripts": {

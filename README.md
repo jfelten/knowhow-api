@@ -770,7 +770,11 @@ Factory method for KHWorkflow
 
 
 ## commits since last release
-		fix more jsdoc tags
+		Merge branch 'master' of https://github.com/jfelten/knowhow-api.git
+ 		fix tests, agent/workflow callbacks
+ 		0.0.20
+ 		updated documentation
+ 		fix more jsdoc tags
  		fixed @returns annotation
  		fix documentation typo
  		expose wait for startup and heartbeat methods in agent api
