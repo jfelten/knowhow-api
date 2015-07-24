@@ -123,6 +123,10 @@ function agentEquals(agent1,agent2) {
 
 var executeOnServer = function(serverURL, agent, job, callback) {
 	
+	if (!agent) {
+		callback(new Error("no agent data provided"));
+		return;
+	}
 	 console.log("posting to: "+serverURL+'/api/execute on agent '+agent.user+'@'+agent.host+':'+agent.port+'('+agent._id+')');
 	
 	if (!jobQueue[agent._id]) {
